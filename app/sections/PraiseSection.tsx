@@ -56,13 +56,12 @@ export default function PraiseSection() {
   useEffect(() => {
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % testimonials.length)
-    }, 5000)
+    }, 6000)
     return () => clearInterval(timer)
   }, [])
 
   const next = () => setIndex((prev) => (prev + 1) % testimonials.length)
-  const prev = () =>
-    setIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length)
+  const prev = () => setIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length)
 
   return (
     <section className="praise">
@@ -74,16 +73,24 @@ export default function PraiseSection() {
       </p>
 
       <div className="slider-wrapper">
-        <button className="arrow left" onClick={prev}>‹</button>
+        <button className="arrow left" onClick={prev}>
+          ‹
+        </button>
 
         <div className="slider">
           {testimonials.map((item, i) => {
             const offset = (i - index + testimonials.length) % testimonials.length
             const isCenter = offset === 0
+            const distance = Math.abs(offset)
+            const blurAmount = Math.min(distance * 2.5, 6)
+            const scale = isCenter ? 1 : 0.85
+            const opacity = isCenter ? 1 : 0.25
+            const zIndex = isCenter ? 10 : 5
             const style = {
-              transform: `translateX(${offset * 350}px) scale(${isCenter ? 1 : 0.85}) rotateY(${isCenter ? 0 : offset > 0 ? -15 : 15}deg)`,
-              opacity: isCenter ? 1 : 0.35,
-              zIndex: isCenter ? 10 : 5,
+              transform: `translateX(${offset * 350}px) scale(${scale}) rotateY(${isCenter ? 0 : offset > 0 ? -15 : 15}deg)`,
+              opacity,
+              zIndex,
+              filter: `blur(${blurAmount}px)`,
             } as React.CSSProperties
 
             return (
@@ -101,50 +108,46 @@ export default function PraiseSection() {
           })}
         </div>
 
-        <button className="arrow right" onClick={next}>›</button>
+        <button className="arrow right" onClick={next}>
+          ›
+        </button>
       </div>
 
       <style jsx>{`
         .praise {
           width: 100%;
-          background: #000;
+          background: radial-gradient(circle at 50% 30%, #0a0a0a 0%, #000 100%);
           color: #fff;
           text-align: center;
-          padding: 160px 5% 220px;
+          padding: 160px 5% 240px;
           overflow: hidden;
           position: relative;
         }
 
-        /* 🌟 Animated left glow */
+        /* 🌟 Animated ambient glow */
         .praise::before {
           content: '';
           position: absolute;
           top: 40%;
-          left: -180px;
-          width: 420px;
-          height: 420px;
+          left: 0;
+          width: 480px;
+          height: 480px;
           background: radial-gradient(circle, rgba(255, 215, 0, 0.18), transparent 70%);
-          filter: blur(55px);
-          animation: pulseGlow 5s ease-in-out infinite alternate;
+          filter: blur(65px);
+          animation: pulseGlow 6s ease-in-out infinite alternate;
           z-index: 0;
         }
 
         @keyframes pulseGlow {
-          0% {
-            opacity: 0.4;
-            transform: scale(1);
-          }
-          100% {
-            opacity: 0.8;
-            transform: scale(1.15);
-          }
+          0% { opacity: 0.4; transform: scale(1); }
+          100% { opacity: 0.8; transform: scale(1.25); }
         }
 
         .praise-title {
-          font-size: 3rem;
+          font-size: 3.2rem;
           font-weight: 700;
           font-family: 'Playfair Display', serif;
-          position: relative;
+          letter-spacing: 0.5px;
           z-index: 2;
         }
 
@@ -157,19 +160,18 @@ export default function PraiseSection() {
         .praise-subtitle {
           color: rgba(255, 255, 255, 0.8);
           font-family: 'Poppins', sans-serif;
-          max-width: 650px;
-          margin: 20px auto 80px;
-          position: relative;
-          z-index: 2;
+          max-width: 680px;
+          margin: 20px auto 90px;
+          font-size: 1.05rem;
         }
 
         .slider-wrapper {
           display: flex;
           align-items: center;
-          justify-content: flex-start;
+          justify-content: center;
           position: relative;
-          margin-left: 8%;
           z-index: 5;
+          width: 100%;
         }
 
         .slider {
@@ -183,7 +185,6 @@ export default function PraiseSection() {
           position: relative;
         }
 
-        /* 🎴 Card Style */
         .card {
           position: absolute;
           width: 320px;
@@ -192,35 +193,29 @@ export default function PraiseSection() {
           border-radius: 18px;
           padding: 40px 25px 80px;
           box-shadow: 0 0 40px rgba(255, 215, 0, 0.08);
-          backdrop-filter: blur(8px);
-          transition: all 0.9s ease;
+          backdrop-filter: blur(10px);
+          transition: all 0.9s cubic-bezier(0.25, 1, 0.3, 1);
         }
 
-        /* ✨ Refined reflection */
+        /* Reflection + curved glow */
         .card.center::after {
           content: '';
           position: absolute;
           bottom: -80px;
-          left: 0;
-          right: 0;
+          left: 50%;
+          transform: translateX(-50%) scaleY(-1);
+          width: 85%;
           height: 80px;
-          border-radius: 18px;
-          background: linear-gradient(to bottom, rgba(255, 215, 0, 0.25), rgba(255, 215, 0, 0.05));
-          filter: blur(20px);
+          border-radius: 50%;
+          background: radial-gradient(circle, rgba(255, 215, 0, 0.25), rgba(255, 215, 0, 0));
+          filter: blur(25px);
           opacity: 0.7;
-          transform: scaleY(-1);
-          animation: reflectionFade 3s ease-in-out infinite alternate;
+          animation: reflectPulse 4s ease-in-out infinite alternate;
         }
 
-        @keyframes reflectionFade {
-          0% {
-            opacity: 0.5;
-            transform: scaleY(-1) scaleX(1);
-          }
-          100% {
-            opacity: 0.8;
-            transform: scaleY(-1) scaleX(1.05);
-          }
+        @keyframes reflectPulse {
+          0% { opacity: 0.4; transform: translateX(-50%) scaleY(-1) scale(1); }
+          100% { opacity: 0.8; transform: translateX(-50%) scaleY(-1) scale(1.05); }
         }
 
         .hexagon {
@@ -266,35 +261,49 @@ export default function PraiseSection() {
           margin-top: 8px;
         }
 
-        /* 🟡 Arrow Buttons */
+        /* 🎯 Arrows */
         .arrow {
           position: absolute;
           top: 50%;
           transform: translateY(-50%);
-          background: rgba(0, 0, 0, 0.6);
+          background: radial-gradient(circle at center, rgba(255, 215, 0, 0.1), rgba(0, 0, 0, 0.6));
           border: 1px solid rgba(255, 215, 0, 0.6);
           color: #ffd700;
           font-size: 1.6rem;
-          width: 50px;
-          height: 50px;
+          width: 52px;
+          height: 52px;
           cursor: pointer;
           border-radius: 50%;
           transition: all 0.3s ease;
-          box-shadow: 0 0 15px rgba(255, 215, 0, 0.3);
+          box-shadow: 0 0 18px rgba(255, 215, 0, 0.3);
           z-index: 20;
           display: flex;
           align-items: center;
           justify-content: center;
+          overflow: hidden;
+          position: relative;
+        }
+
+        .arrow::after {
+          content: '';
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(120deg, transparent, rgba(255, 215, 0, 0.2), transparent);
+          transform: translateX(-100%);
+          transition: transform 0.5s ease;
+        }
+
+        .arrow:hover::after {
+          transform: translateX(100%);
         }
 
         .arrow:hover {
-          background: rgba(255, 215, 0, 0.15);
-          box-shadow: 0 0 25px rgba(255, 215, 0, 0.6);
+          box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
           transform: translateY(-50%) scale(1.1);
         }
 
         .arrow.left {
-          left: 2.5%;
+          left: 5%;
         }
 
         .arrow.right {
@@ -303,61 +312,20 @@ export default function PraiseSection() {
 
         /* 📱 Responsive */
         @media (max-width: 992px) {
-          .praise {
-            padding: 120px 5% 160px;
-          }
-          .praise-title {
-            font-size: 2.6rem;
-          }
-          .slider-wrapper {
-            margin-left: 4%;
-          }
-          .card {
-            width: 270px;
-            padding: 35px 20px 70px;
-          }
+          .praise { padding: 120px 5% 160px; }
+          .praise-title { font-size: 2.6rem; }
+          .card { width: 270px; padding: 35px 20px 70px; }
         }
 
         @media (max-width: 768px) {
-          .slider-wrapper {
-            justify-content: center;
-            margin-left: 0;
-          }
-          .slider {
-            max-width: 100%;
-            height: 400px;
-          }
-          .arrow {
-            width: 42px;
-            height: 42px;
-            font-size: 1.3rem;
-          }
-          .card {
-            width: 240px;
-            padding: 30px 18px 60px;
-          }
+          .arrow { width: 42px; height: 42px; font-size: 1.3rem; }
+          .card { width: 240px; padding: 30px 18px 60px; }
         }
 
         @media (max-width: 480px) {
-          .praise-title {
-            font-size: 2rem;
-          }
-          .praise-subtitle {
-            font-size: 0.9rem;
-          }
-          .arrow {
-            width: 38px;
-            height: 38px;
-            font-size: 1.1rem;
-          }
-          .card {
-            width: 200px;
-            padding: 25px 16px 55px;
-          }
-          .card.center::after {
-            height: 50px;
-            bottom: -50px;
-          }
+          .praise-title { font-size: 2rem; }
+          .arrow { width: 38px; height: 38px; font-size: 1.1rem; }
+          .card { width: 200px; padding: 25px 16px 55px; }
         }
       `}</style>
     </section>
