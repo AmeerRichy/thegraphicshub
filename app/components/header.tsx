@@ -11,10 +11,10 @@ const Header = () => {
       {/* 🌟 Logo Section */}
       <div className="logo">
         <Image
-          src="/logo.png"
+          src="/assets/images/Logo.png"
           alt="Graphics Hub Logo"
-          width={100}
-          height={40}
+          width={250}
+          height={80}
           style={{ objectFit: 'contain' }}
         />
       </div>

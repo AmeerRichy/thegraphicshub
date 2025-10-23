@@ -1,19 +1,20 @@
 'use client'
+
 import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 
 const cards = [
-  { i: -5, title: 'UI/UX Design', desc: 'Design intuitive & user-friendly interfaces that enhance digital experiences.', link: '#' },
-  { i: -4, title: 'Stationary', desc: 'Professional & cohesive business essentials like cards & letterheads.', link: '#' },
-  { i: -3, title: 'Social Media', desc: 'Create engaging posts & templates to boost brand presence.', link: '#' },
-  { i: -2, title: 'Logo Design', desc: 'Craft unique & impactful logos representing brand values.', link: '#' },
-  { i: -1, title: 'Branding', desc: 'Develop color schemes, typography, & visual elements.', link: '#' },
-  { i: 0, title: 'View All', desc: '', link: '#' },
-  { i: 1, title: 'Print Media', desc: 'Design visually compelling brochures & flyers.', link: '#' },
-  { i: 2, title: 'Video Editing', desc: 'Produce dynamic video content & animations.', link: '#' },
-  { i: 3, title: 'Product Design', desc: 'Innovative & appealing packaging designs.', link: '#' },
-  { i: 4, title: 'Interior/Exterior', desc: 'Design captivating spaces aligned with your brand.', link: '#' },
-  { i: 5, title: 'Character Design', desc: 'Create custom characters for storytelling & branding.', link: '#' },
+  { i: -5, title: 'UI/UX Design', desc: 'Design intuitive & user-friendly interfaces that enhance digital experiences.', link: '#', img: '/assets/images/UI-UX.png' },
+  { i: -4, title: 'Stationary', desc: 'Professional & cohesive business essentials like cards & letterheads.', link: '#', img: '/assets/images/Stationary-Kit.png' },
+  { i: -3, title: 'Social Media', desc: 'Create engaging posts & templates to boost brand presence.', link: '#', img: '/assets/images/Social-Media-.png' },
+  { i: -2, title: 'Logo Design', desc: 'Craft unique & impactful logos representing brand values.', link: '#', img: '/assets/images/Logo-Design.png' },
+  { i: -1, title: 'Branding', desc: 'Develop color schemes, typography, & visual elements.', link: '#', img: '/assets/images/Branding.png' },
+  { i: 0, title: 'View All', desc: '', link: '#', img: '/assets/images/All-Services-1.png' },
+  { i: 1, title: 'Print Media', desc: 'Design visually compelling brochures & flyers.', link: '#', img: '/assets/images/Print-Media.png' },
+  { i: 2, title: 'Video Editing / Animation', desc: 'Produce dynamic video content & animations.', link: '#', img: '/assets/images/Video-Editing-Animation.png' },
+  { i: 3, title: 'Product Design / Packaging', desc: 'Innovative & appealing packaging designs.', link: '#', img: '/assets/images/Product-Designing-Packaging.png' },
+  { i: 4, title: 'Interior / Exterior', desc: 'Design captivating spaces aligned with your brand.', link: '#', img: '/assets/images/Interior-Exterior.png' },
+  { i: 5, title: 'Character Design', desc: 'Create custom characters for storytelling & branding.', link: '#', img: '/assets/images/Character-Design.png' },
 ]
 
 export default function WondersSection() {
@@ -52,7 +53,20 @@ export default function WondersSection() {
             onMouseEnter={() => setHovered({ title: card.title, desc: card.desc })}
             onMouseLeave={() => setHovered(null)}
           >
-            <Image src="/sample-card.jpg" alt={card.title} width={200} height={300} />
+            <Image
+              src={card.img}
+              alt={card.title}
+              width={200}
+              height={300}
+              unoptimized
+              priority
+              style={{
+                width: '100%',
+                height: '100%',
+                borderRadius: '6px',
+                objectFit: 'cover',
+              }}
+            />
           </div>
         ))}
 
@@ -70,7 +84,7 @@ export default function WondersSection() {
           background-color: #000;
           color: #fff;
           text-align: center;
-          padding: 160px 5% 200px; /* ✅ added bottom space */
+          padding: 160px 5% 200px;
           background-image: url('/cards-bg.png');
           background-size: 180px;
           background-repeat: repeat;
@@ -134,13 +148,6 @@ export default function WondersSection() {
             scale(1);
         }
 
-        .card img {
-          width: 100%;
-          height: 100%;
-          border-radius: 6px;
-          object-fit: cover;
-        }
-
         .card:hover {
           transform: rotate(calc(var(--i) * 12deg)) translate(calc(var(--i) * 10px), -40px);
           background-position: right;
@@ -178,8 +185,6 @@ export default function WondersSection() {
           }
           .card-container {
             height: 300px;
-            max-width: 100%;
-            overflow: hidden;
           }
           .animate .card.visible {
             transform: rotate(calc(var(--i) * 10deg)) translate(calc(var(--i) * -10px), 40px)
@@ -200,7 +205,6 @@ export default function WondersSection() {
         @media (max-width: 480px) {
           .card-container {
             height: 240px;
-            overflow: hidden;
           }
           .card {
             width: 90px;
