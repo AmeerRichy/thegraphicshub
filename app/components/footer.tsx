@@ -28,7 +28,7 @@ export default function Footer() {
   target.style.color = isEnter ? '#d4af37' : '#888'
   target.style.transform = isEnter ? 'translateX(8px)' : 'translateX(0)'
 }
-
+    
 
   return (
     <footer
