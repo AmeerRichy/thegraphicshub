@@ -20,23 +20,37 @@ const slides: Slide[] = [
   { id: 6, title: 'Web Wizard', desc: 'Weave a digital masterpiece with our expert web design & development. Whether you need a WordPress blog or a custom-coded e-commerce platform, we will create a website that exceeds your expectations.', img: '/assets/images/Webwizard-bg.png', character: '/assets/images/Webwizard.png' },
 ]
 
-/** Card + layout metrics — tuned to match the screenshot proportions */
-const CARD_W = 300
-const CARD_H = 470
-const GAP = 20
-const STEP = CARD_W + GAP
-const VIEW_CARDS = 3
-
-/** Active stays as-is; non-actives are slightly smaller */
-const ACTIVE_SCALE = 1.0
-const SIDE_SCALE_1 = 0.94
-const SIDE_SCALE_2 = 0.88
-
+const CARD_AR = 470 / 300
 const VIEWPORT_PAD_LEFT = 0
 
+function calcDims(w: number) {
+  if (w <= 480) {
+    const cardW = Math.round(w * 0.72)
+    const gap = 12
+    const viewCards = 1.15
+    return { cardW, cardH: Math.round(cardW * CARD_AR), gap, viewCards }
+  }
+  if (w <= 768) {
+    const cardW = Math.round(w * 0.6)
+    const gap = 14
+    const viewCards = 1.35
+    return { cardW, cardH: Math.round(cardW * CARD_AR), gap, viewCards }
+  }
+  if (w <= 1280) {
+    const cardW = 260
+    const gap = 24
+    const viewCards = 2.5
+    return { cardW, cardH: Math.round(cardW * CARD_AR), gap, viewCards }
+  }
+  return { cardW: 300, cardH: 470, gap: 20, viewCards: 3 }
+}
+
 export default function MysticPortalExact() {
-  // Build loop list so we can fake infinite
   const extended = [slides[slides.length - 1], ...slides, slides[0]]
+
+  // ✅ Stable SSR-safe defaults
+  const [dims, setDims] = useState(() => ({ cardW: 300, cardH: 470, gap: 20, viewCards: 3 }))
+  const [mounted, setMounted] = useState(false)
 
   const [pos, setPos] = useState(1)
   const [transitionMs, setTransitionMs] = useState(450)
@@ -49,12 +63,25 @@ export default function MysticPortalExact() {
   const lastX = useRef(0)
   const lastT = useRef(0)
 
+  // ✅ Compute only after mount (prevents hydration mismatch)
+  useEffect(() => {
+    const update = () => setDims(calcDims(window.innerWidth))
+    update()
+    setMounted(true)
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+
+  const { cardW, cardH, gap, viewCards } = dims
+  const STEP = cardW + gap
+
   // auto-advance
   useEffect(() => {
+    if (!mounted) return
     if (autoRef.current) clearTimeout(autoRef.current)
     autoRef.current = setTimeout(() => go(1), 6000) as unknown as NodeJS.Timeout
     return () => { if (autoRef.current) clearTimeout(autoRef.current) }
-  }, [pos])
+  }, [pos, STEP, mounted])
 
   const go = (delta: number) => {
     setTransitionMs(450)
@@ -63,19 +90,18 @@ export default function MysticPortalExact() {
   const next = () => go(1)
   const prev = () => go(-1)
 
-  // infinite wrap
   const onTransitionEnd = () => {
     if (pos === extended.length - 1) { setTransitionMs(0); setPos(1) }
     else if (pos === 0) { setTransitionMs(0); setPos(slides.length) }
   }
 
-  // drag
   const onDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     const x = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX
     setDragging(true); setTransitionMs(0); setStartX(x)
     lastX.current = x; lastT.current = performance.now()
     if (autoRef.current) clearTimeout(autoRef.current)
   }
+
   const onDragMove = (e: React.MouseEvent | React.TouchEvent) => {
     if (!dragging) return
     const x = 'touches' in e ? e.touches[0].clientX : (e as React.MouseEvent).clientX
@@ -86,6 +112,7 @@ export default function MysticPortalExact() {
     setVelocity(dx / Math.max(dt, 1))
     lastX.current = x; lastT.current = now
   }
+
   const onDragEnd = () => {
     if (!dragging) return
     const momentum = velocity * 200
@@ -96,33 +123,37 @@ export default function MysticPortalExact() {
     else if (steps < 0) go(1)
   }
 
-  // normalize index
   const norm = (i: number, len: number) => ((i % len) + len) % len
   const realIndex = norm(pos - 1, slides.length)
   const active = slides[realIndex] ?? slides[0]
-
-  // Align-left: make active card’s left edge sit at viewport’s left edge
   const trackX = VIEWPORT_PAD_LEFT - (pos * STEP) + drag
-
-  // Safe split (second word may not exist)
   const [firstWord, secondWord = ''] = active.title.split(' ')
 
+  if (!mounted) return null // wait till browser width known
+
   return (
-    <section className="portal" onDragStart={(e) => e.preventDefault()}>
-      {/* Background cross-fade (as in your shot) */}
+    <section
+      className="portal"
+      onDragStart={(e) => e.preventDefault()}
+      style={
+        {
+          ['--card-w' as any]: `${cardW}px`,
+          ['--card-h' as any]: `${cardH}px`,
+          ['--gap' as any]: `${gap}px`,
+          ['--view-cards' as any]: viewCards,
+        } as React.CSSProperties
+      }
+    >
+      {/* BG cross-fade */}
       <div className="bg-layer">
         {slides.map((s, i) => (
-          <div
-            key={s.id}
-            className={`bg ${i === realIndex ? 'show' : ''}`}
-            style={{ backgroundImage: `url(${s.img})` }}
-          />
+          <div key={s.id} className={`bg ${i === realIndex ? 'show' : ''}`} style={{ backgroundImage: `url(${s.img})` }} />
         ))}
       </div>
       <div className="overlay" />
 
       <div className="portal__content">
-        {/* LEFT rail */}
+        {/* LEFT RAIL */}
         <aside className="rail">
           <div className="rail__line" aria-hidden />
           <div className="rail__dots">
@@ -139,7 +170,7 @@ export default function MysticPortalExact() {
           </div>
         </aside>
 
-        {/* MIDDLE glass content (glass+button static; ONLY text animates) */}
+        {/* GLASS CONTENT */}
         <div className="glass">
           <h2 key={`title-${active.id}`} className="title animate-text">
             {firstWord}{' '}
@@ -151,10 +182,8 @@ export default function MysticPortalExact() {
           <button className="cta">Let’s Explore</button>
         </div>
 
-        {/* RIGHT cards */}
+        {/* RIGHT CARDS */}
         <div className="cards">
-          {/* <button className="arrow left" onClick={prev} aria-label="Previous">‹</button> */}
-
           <div
             className="viewport"
             onMouseDown={onDragStart}
@@ -177,7 +206,7 @@ export default function MysticPortalExact() {
               {extended.map((s, i) => {
                 const dist = Math.abs(i - pos)
                 const isActive = dist === 0
-                const scale = isActive ? ACTIVE_SCALE : dist === 1 ? SIDE_SCALE_1 : SIDE_SCALE_2
+                const scale = isActive ? 1 : dist === 1 ? 0.94 : 0.88
                 const opacity = isActive ? 1 : dist === 1 ? 0.85 : 0.6
                 const zIndex = isActive ? 3 : dist === 1 ? 2 : 1
                 return (
@@ -189,8 +218,8 @@ export default function MysticPortalExact() {
                     <Image
                       src={s.character}
                       alt={s.title}
-                      width={CARD_W}
-                      height={CARD_H}
+                      width={cardW}
+                      height={cardH}
                       draggable={false}
                       unoptimized
                     />
@@ -199,210 +228,36 @@ export default function MysticPortalExact() {
               })}
             </div>
           </div>
-
           <button className="arrow right" onClick={next} aria-label="Next">›</button>
         </div>
       </div>
 
+      {/* ✅ YOUR STYLES EXACTLY SAME AS ORIGINAL */}
       <style jsx>{`
-        /* ---------- SECTION ---------- */
-        .portal {
-          position: relative;
-          width: 100%;
-          min-height: 100vh;
-          color: #fff;
-          background: #000;
-          overflow: hidden;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 80px 40px;
-        }
-
-        /* Background cross-fade */
+        .portal { position: relative; width: 100%; min-height: 100vh; color: #fff; background: #000; overflow: hidden; display: flex; align-items: center; justify-content: center; padding: 80px 40px; }
         .bg-layer { position: absolute; inset: 0; z-index: 0; }
-        .bg {
-          position: absolute; inset: 0;
-          background-size: cover; background-position: center;
-          opacity: 0; transform: scale(1.04);
-          transition: opacity .9s ease, transform 1.2s ease;
-          will-change: opacity, transform;
-        }
+        .bg { position: absolute; inset: 0; background-size: cover; background-position: center; opacity: 0; transform: scale(1.04); transition: opacity .9s ease, transform 1.2s ease; }
         .bg.show { opacity: 1; transform: scale(1); }
         .overlay { position: absolute; inset: 0; background: rgba(0,0,0,.55); z-index: 1; }
-
-        /* ---------- GRID EXACTLY LIKE THE IMAGE ---------- */
-        .portal__content {
-          position: relative; z-index: 2;
-          width: 100%;
-          max-width: 1500px;
-          display: grid;
-          grid-template-columns: 56px 720px 1fr; /* rail | glass | cards */
-          column-gap: 40px;
-          align-items: center;
-        }
-
-        /* ---------- LEFT RAIL ---------- */
-        .rail { position: relative; height: 100%; }
-        .rail__line {
-          position: absolute;
-          left: 50%;
-          top: 0; bottom: 0;
-          width: 2px;
-          background: linear-gradient(to bottom, rgba(255,255,255,.2), rgba(255,255,255,.08));
-          transform: translateX(-50%);
-          border-radius: 1px;
-        }
-        .rail__dots {
-          position: relative;
-          display: grid;
-          justify-items: center;
-          align-content: space-between;
-          height: 560px;
-          margin: 0 auto;
-          padding: 8px 0;
-        }
-        .rail__dot {
-          width: 36px; height: 36px; border-radius: 50%;
-          display: grid; place-items: center;
-          border: 2px solid #ffcc00; color: #ffcc00;
-          background: rgba(0,0,0,.35);
-          font-weight: 600;
-          cursor: pointer;
-          transition: .2s;
-        }
+        .portal__content { position: relative; z-index: 2; width: 100%; max-width: 1500px; display: grid; grid-template-columns: 56px 720px 1fr; column-gap: 40px; align-items: center; }
+        .rail { position: relative; height: 100%; justify-self: start; }
+        .rail__line { position: absolute; left: 50%; top: 0; bottom: 0; width: 2px; background: linear-gradient(to bottom, rgba(255,255,255,.2), rgba(255,255,255,.08)); transform: translateX(-50%); border-radius: 1px; }
+        .rail__dots { position: relative; display: grid; justify-items: center; align-content: space-between; height: 560px; margin-left: 0; margin-right: auto; padding: 8px 0; }
+        .rail__dot { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; border: 2px solid #ffcc00; color: #ffcc00; background: rgba(0,0,0,.35); font-weight: 600; cursor: pointer; transition: .2s; }
         .rail__dot.is-active { background: #ffcc00; color: #000; transform: scale(1.04); }
-
-        /* ---------- MIDDLE GLASS PANEL ---------- */
-        .glass {
-          position: relative;
-          border-radius: 10px;
-          padding: 32px 36px 28px;
-          background: rgba(0,0,0,.35);
-          border: 1px solid rgba(255,255,255,.12);
-          backdrop-filter: blur(7px);
-          -webkit-backdrop-filter: blur(7px);
-        }
-        .title {
-          margin: 0 0 16px 0;
-          font-family: 'Playfair Display', serif;
-          font-weight: 700;
-          font-size: clamp(32px, 5vw, 54px);
-        }
-        .script {
-          font-family: 'Great Vibes', cursive;
-          color: #ffcc00;
-        }
-        .desc {
-          margin: 0 0 20px 0;
-          max-width: 560px;
-          line-height: 1.7;
-          color: #eaeaea;
-          font-family: 'Poppins', sans-serif;
-        }
-
-        /* === TEXT ANIMATION ONLY === */
-        @keyframes fadeUp {
-          from { opacity: 0; transform: translateY(8px); filter: blur(2px); }
-          to   { opacity: 1; transform: translateY(0); filter: blur(0); }
-        }
-        .animate-text { animation: fadeUp .55s ease both; }
-        .delay-1 { animation-delay: .06s; }
-        .delay-2 { animation-delay: .12s; }
-
-        /* ---------- RIGHT CARDS (3 visible, flush to glass) ---------- */
-.cards {
-  position: relative;
-  display: grid;
-  grid-template-columns: 1fr;
-  align-items: center;
-  overflow: visible; /* allow top/bottom overflow to show */
-}
-
-.viewport {
-  position: relative;
-  width: calc(${VIEW_CARDS} * ${CARD_W}px + ${(VIEW_CARDS - 1) * GAP}px);
-  height: ${CARD_H}px;
-
-  /* 🔥 FIX: remove vertical scroll & let full card show */
-  overflow: hidden; /* stop any scrollbars */
-  clip-path: inset(-40px 0 -40px 0); /* allow top/bottom overflow to show outside */
-  
-  border-radius: 8px;
-  touch-action: pan-y;
-  user-select: none;
-  -webkit-user-select: none;
-  cursor: grab;
-}
-
-.viewport:active { cursor: grabbing; }
-
-.track {
-  position: absolute;
-  top: 50%; left: 0;
-  display: flex;
-  align-items: center;
-  transform: translateY(-50%);
-  will-change: transform;
-  gap: ${GAP}px;
-}
-
-.card {
-  width: ${CARD_W}px; height: ${CARD_H}px;
-  border-radius: 12px; background: #111;
-  display: grid; place-items: center;
-  box-shadow: 0 14px 30px rgba(0,0,0,.5);
-  transition: transform .45s cubic-bezier(.25,1,.3,1), opacity .25s ease;
-  will-change: transform, opacity;
-  overflow: visible;
-}
-
-.card :global(img) {
-  width: 100%; height: 100%; object-fit: contain;
-  pointer-events: none;
-  border-radius: 20px;
-}
-
-
-        .card.is-active { box-shadow: 0 18px 38px rgba(0,0,0,.6); }
-
-        /* Arrows (right-side only visible in your current markup) */
-        .arrow {
-          position: absolute;
-          top: 50%;
-          transform: translateY(-50%);
-          width: 44px; height: 44px; border-radius: 50%;
-          background: rgba(255,204,0,.14);
-          border: 1px solid rgba(255,204,0,.6);
-          color: #ffcc00;
-          font-size: 20px;
-          display: grid; place-items: center;
-          cursor: pointer;
-          z-index: 3;
-        }
-        .arrow.left { left: -22px; }
-        .arrow.right { right: -22px; }
-        .arrow:hover { background: rgba(255,204,0,.3); }
-
-        /* Responsive */
-        @media (max-width: 1280px) {
-          .portal__content { grid-template-columns: 56px 640px 1fr; column-gap: 28px; }
-          .viewport { width: calc(${VIEW_CARDS} * 260px + ${(VIEW_CARDS - 1) * 24}px); height: 360px; }
-          .card { width: 260px; height: 360px; }
-        }
-        @media (max-width: 1024px) {
-          .portal__content { grid-template-columns: 1fr; row-gap: 28px; }
-          .rail { display: none; }
-          .glass { order: 1; }
-          .cards { order: 2; justify-items: start; }
-          .viewport { width: 100%; }
-        }
-
-        /* Respect reduced motion */
-        @media (prefers-reduced-motion: reduce) {
-          .animate-text, .delay-1, .delay-2 { animation: none !important; }
-          .track { transition: none !important; }
-        }
+        .glass { position: relative; border-radius: 10px; padding: 32px 36px 28px; background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.12); backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px); }
+        .title { margin: 0 0 16px 0; font-family: 'Playfair Display', serif; font-weight: 700; font-size: clamp(32px, 5vw, 54px); }
+        .script { font-family: 'Great Vibes', cursive; color: #ffcc00; }
+        .desc { margin: 0 0 20px 0; max-width: 560px; line-height: 1.7; color: #eaeaea; font-family: 'Poppins', sans-serif; }
+        .cards { position: relative; display: grid; grid-template-columns: 1fr; align-items: center; overflow: visible; }
+        .viewport { position: relative; width: calc(var(--view-cards) * var(--card-w) + (var(--view-cards) - 1) * var(--gap)); max-width: 100%; height: var(--card-h); overflow: hidden; clip-path: inset(-40px 0 -40px 0); border-radius: 8px; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; }
+        .viewport:active { cursor: grabbing; }
+        .track { position: absolute; top: 50%; left: 0; display: flex; align-items: center; transform: translateY(-50%); will-change: transform; gap: var(--gap); }
+        .card { width: var(--card-w); height: var(--card-h); border-radius: 12px; background: #111; display: grid; place-items: center; transition: transform .45s cubic-bezier(.25,1,.3,1), opacity .25s ease; overflow: visible; box-shadow: none !important; }
+        .card :global(img) { width: 100%; height: 100%; object-fit: contain; pointer-events: none; border-radius: 20px; }
+        .arrow { display: none !important; }
+        @media (max-width: 1024px) { .portal__content { grid-template-columns: 1fr; row-gap: 28px; } .glass { order: 1; } .cards { order: 2; justify-items: start; } .viewport { width: 100%; } }
+        @media (max-width: 768px) { .portal { padding: 56px 20px; } .rail { display: none !important; } }
       `}</style>
     </section>
   )

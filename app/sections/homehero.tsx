@@ -1,65 +1,67 @@
 'use client'
 
 const HomeHero = () => (
-  <section
-    style={{
-      position: 'relative',
-      width: '100%',
-      height: '100vh',
-      overflow: 'hidden',
-      backgroundColor: 'black',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}
-  >
-    {/* 🎥 Exact 16:9 container */}
-    <div
-      style={{
-        position: 'relative',
-        width: '100vw',
-        height: '56.25vw', // 9/16 = 0.5625 → keeps perfect 16:9 ratio
-        maxHeight: '100vh',
-        maxWidth: '177.78vh', // 16/9 = 1.7778 → keeps perfect ratio vertically too
-      }}
-    >
+  <section className="hero">
+    {/* Full-width 4:3 frame — scales on all screens */}
+    <div className="frame">
       <video
+        className="vid"
         src="/assets/videos/tghh.mp4"
         autoPlay
         loop
         muted
         playsInline
         preload="auto"
-        style={{
-          width: '100%',
-          height: '100%',
-          objectFit: 'contain', // ✅ show entire frame
-          position: 'absolute',
-          top: 0,
-          left: 0,
-        }}
       />
     </div>
 
-    {/* ✨ Overlay Text */}
-    {/* <div
-      style={{
-        position: 'absolute',
-        inset: 0,
-        zIndex: 1,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        textAlign: 'center',
-        color: '#FFD700',
-        background: 'rgba(0,0,0,0.3)',
-        pointerEvents: 'none',
-      }}
-    >
-      <h1 style={{ fontSize: '4rem', fontWeight: 600 }}>
-        Magic <span style={{ fontWeight: 'bold' }}>in every pixel</span>
-      </h1>
-    </div> */}
+    <style jsx>{`
+      .hero {
+        position: relative;
+        width: 100%;
+        min-height: 100vh;
+        overflow: hidden;
+        background: black;
+        display: flex;
+        justify-content: center;
+      }
+
+      .frame {
+        position: relative;
+        width: 100vw;
+        aspect-ratio: 4 / 3; /* 4:3, fills width */
+        overflow: hidden;
+      }
+
+      .vid {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        object-position: center bottom; /* keep bottom safe */
+        transform: scale(1.01);
+        transform-origin: center bottom;
+        transition: transform 0.3s ease, object-position 0.3s ease;
+      }
+
+      /* ===== Mobile tweaks ===== */
+      @media (max-width: 768px) {
+        .hero {
+          min-height: 80vh;
+        }
+        .frame {
+          width: 100vw;
+          aspect-ratio: 4 / 3;
+          overflow: hidden;
+        }
+        .vid {
+          transform: scale(1.02) translateY(-3%); /* 👈 move slightly up */
+          object-fit: contain;                    /* fit width */
+          object-position: center bottom;
+        }
+      }
+    `}</style>
   </section>
 )
 
