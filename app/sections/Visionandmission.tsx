@@ -58,7 +58,7 @@ export default function VisionMissionSection() {
 
           <div style={{ width: '100%', maxWidth: 560, margin: '24px auto 0' }}>
             <Image
-              src="/assets/images/vision.webp"
+              src="/assets/images/Vision.webp"
               alt="Our Vision"
               width={1120}
               height={840}
@@ -121,7 +121,7 @@ export default function VisionMissionSection() {
 
           <div style={{ width: '100%', maxWidth: 560, margin: '24px auto 0' }}>
             <Image
-              src="/assets/images/mission.webp"
+              src="/assets/images/Mission.webp"
               alt="Our Mission"
               width={1120}
               height={840}
