@@ -1,9 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 export default function Footer() {
   const [isMobile, setIsMobile] = useState(false)
+  const pathname = usePathname()
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768)
@@ -12,23 +15,68 @@ export default function Footer() {
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
+  // --- INTERNAL ROUTES (edit these as needed)
+  const routes = {
+    faqs: '/faqs',
+    contact: '/contact-us',
+    terms: '/tncs',
+    refund: '/refund-policy',
+    privacy: '/privacy-policy',
+    payment: '/payment-policy',
+  }
+
+  // --- SOCIALS (external)
   const socialLinks = [
-    { label: 'Be', url: '#behance', title: 'Behance' },
-    { label: 'fi', url: '#facebook', title: 'Facebook' },
-    { label: 'in', url: '#linkedin', title: 'LinkedIn' },
-    { label: '@', url: '#instagram', title: 'Instagram' },
-    { label: 'f', url: '#facebook', title: 'Facebook' },
+    { label: 'Be', url: 'https://www.behance.net/your-handle', title: 'Behance' },
+    { label: 'f', url: 'https://www.facebook.com/your-page', title: 'Facebook' },
+    { label: 'in', url: 'https://www.linkedin.com/company/your-company', title: 'LinkedIn' },
+    { label: '@', url: 'https://www.instagram.com/your-handle', title: 'Instagram' },
+    { label: 'X', url: 'https://x.com/your-handle', title: 'X (Twitter)' },
   ]
 
+  // is this link active?
+  const isActive = (href: string) => {
+    // strict match; if you want section-wide highlighting, use pathname.startsWith(href)
+    return pathname === href
+  }
+
+  // Base style generator per-link
+  const linkBaseStyle = (active: boolean, fontSize: string) =>
+    ({
+      color: active ? '#d4af37' : '#888',
+      fontSize,
+      textDecoration: 'none',
+      transition: 'all 0.4s',
+      display: 'inline-block',
+    } as React.CSSProperties)
+
+  // Hover handlers that respect active state
   const handleLinkHover = (
-  e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
-  isEnter: boolean
-) => {
-  const target = e.currentTarget as HTMLAnchorElement
-  target.style.color = isEnter ? '#d4af37' : '#888'
-  target.style.transform = isEnter ? 'translateX(8px)' : 'translateX(0)'
-}
-    
+    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>,
+    isEnter: boolean,
+    active: boolean
+  ) => {
+    const target = e.currentTarget as HTMLAnchorElement
+    if (isEnter) {
+      target.style.color = '#d4af37'
+      target.style.transform = 'translateX(8px)'
+    } else {
+      target.style.color = active ? '#d4af37' : '#888'
+      target.style.transform = 'translateX(0)'
+    }
+  }
+
+  // Keyboard focus should mirror hover, also respect active
+  const onFocus = (e: React.FocusEvent<HTMLAnchorElement>) => {
+    const t = e.currentTarget
+    t.style.color = '#d4af37'
+    t.style.transform = 'translateX(8px)'
+  }
+  const onBlur = (e: React.FocusEvent<HTMLAnchorElement>, active: boolean) => {
+    const t = e.currentTarget
+    t.style.color = active ? '#d4af37' : '#888'
+    t.style.transform = 'translateX(0)'
+  }
 
   return (
     <footer
@@ -116,24 +164,27 @@ export default function Footer() {
                   gap: '20px',
                 }}
               >
-                {["FAQ's", 'Contact Us', 'Terms & Conditions'].map((item, i) => (
-                  <li key={i}>
-                    <a
-                      href="#"
-                      style={{
-                        color: '#888',
-                        fontSize: isMobile ? '13px' : '14px',
-                        textDecoration: 'none',
-                        transition: 'all 0.4s',
-                        display: 'inline-block',
-                      }}
-                      onMouseEnter={(e) => handleLinkHover(e, true)}
-                      onMouseLeave={(e) => handleLinkHover(e, false)}
-                    >
-                      {item}
-                    </a>
-                  </li>
-                ))}
+                {[
+                  { label: "FAQ's", href: routes.faqs },
+                  { label: 'Contact Us', href: routes.contact },
+                  { label: 'Terms & Conditions', href: routes.terms },
+                ].map(({ label, href }) => {
+                  const active = isActive(href)
+                  return (
+                    <li key={href}>
+                      <Link
+                        href={href}
+                        style={linkBaseStyle(active, isMobile ? '13px' : '14px')}
+                        onMouseEnter={(e) => handleLinkHover(e, true, active)}
+                        onMouseLeave={(e) => handleLinkHover(e, false, active)}
+                        onFocus={onFocus}
+                        onBlur={(e) => onBlur(e, active)}
+                      >
+                        {label}
+                      </Link>
+                    </li>
+                  )
+                })}
               </ul>
 
               {/* Social Icons */}
@@ -152,6 +203,8 @@ export default function Footer() {
                       key={i}
                       href={social.url}
                       title={social.title}
+                      target="_blank"
+                      rel="noopener noreferrer"
                       style={{
                         cursor: 'pointer',
                         transition: 'all 0.4s',
@@ -217,6 +270,7 @@ export default function Footer() {
                   }}
                 />
               </h3>
+
               <ul
                 style={{
                   listStyle: 'none',
@@ -227,23 +281,27 @@ export default function Footer() {
                   gap: '20px',
                 }}
               >
-                {['Refund Policy', 'Privacy Policy', 'Payment Policy'].map((item, i) => (
-                  <li key={i}>
-                    <a
-                      href="#"
-                      style={{
-                        color: '#888',
-                        fontSize: isMobile ? '13px' : '14px',
-                        textDecoration: 'none',
-                        transition: 'all 0.4s',
-                      }}
-                      onMouseEnter={(e) => handleLinkHover(e, true)}
-                      onMouseLeave={(e) => handleLinkHover(e, false)}
-                    >
-                      {item}
-                    </a>
-                  </li>
-                ))}
+                {[
+                  { label: 'Refund Policy', href: routes.refund },
+                  { label: 'Privacy Policy', href: routes.privacy },
+                  { label: 'Payment Policy', href: routes.payment },
+                ].map(({ label, href }) => {
+                  const active = isActive(href)
+                  return (
+                    <li key={href}>
+                      <Link
+                        href={href}
+                        style={linkBaseStyle(active, isMobile ? '13px' : '14px')}
+                        onMouseEnter={(e) => handleLinkHover(e, true, active)}
+                        onMouseLeave={(e) => handleLinkHover(e, false, active)}
+                        onFocus={onFocus}
+                        onBlur={(e) => onBlur(e, active)}
+                      >
+                        {label}
+                      </Link>
+                    </li>
+                  )
+                })}
               </ul>
             </div>
           </div>

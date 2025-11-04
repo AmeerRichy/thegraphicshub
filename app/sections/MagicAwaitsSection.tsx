@@ -63,6 +63,7 @@ export default function MagicAwaitsSection() {
               fontSize: 'clamp(0.98rem, 1.05vw, 1.06rem)',
               lineHeight: 1.9,
               color: '#cfcfcf',
+              textAlign: 'justify',
             }}
           >
             Whether you’re building from scratch or reimagining the familiar, <strong>Graphics Hub</strong> is your partner in crafting designs that

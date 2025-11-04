@@ -156,9 +156,9 @@ export default function TouchAndSocial() {
           display: flex;
           align-items: center;
           justify-content: center;
-          width: 90%;
-          height: 90%;
-          border-radius: 25px;
+          width: 95%;
+          height: 95%;
+          border-radius: 30px;
           transition: all 0.5s ease;
           background-color: rgba(0, 0, 0, 0.842);
           background-size: 200%;

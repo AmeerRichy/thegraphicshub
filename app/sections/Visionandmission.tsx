@@ -41,7 +41,7 @@ export default function VisionMissionSection() {
               fontSize: 'clamp(0.95rem, 1.02vw, 1.05rem)',
               lineHeight: 1.9,
               color: '#cfcfcf',
-              textAlign: 'left',
+              textAlign: 'justify',
               letterSpacing: '.15px',
             }}
           >
@@ -102,7 +102,7 @@ export default function VisionMissionSection() {
               fontSize: 'clamp(0.95rem, 1.02vw, 1.05rem)',
               lineHeight: 1.9,
               color: '#cfcfcf',
-              textAlign: 'left',
+              textAlign: 'justify',
               letterSpacing: '.15px',
             }}
           >
