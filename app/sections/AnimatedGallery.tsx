@@ -11,50 +11,15 @@ export default function InfiniteGallery({
   buttonText = 'View All',
   onButtonClick,
 }: GalleryProps) {
-  // ── 5 columns × 5 images (add your own URLs here) ──────────────────────────
   const COL_IMAGES: string[][] = [
-    [
-      '/assets/images/col1-1.png',
-      '/assets/images/col1-2.png',
-      '/assets/images/col1-3.png',
-      '/assets/images/col1-4.png',
-      '/assets/images/col1-5.png',
-    ],
-    [
-      '/assets/images/col2-1.png',
-      '/assets/images/col2-2.png',
-      '/assets/images/col2-3.png',
-      '/assets/images/col2-4.png',
-      '/assets/images/col2-5.png',
-    ],
-    [
-      '/assets/images/col3-1.png',
-      '/assets/images/col3-2.png',
-      '/assets/images/col3-3.png',
-      '/assets/images/col3-4.png',
-      '/assets/images/col3-5.png',
-    ],
-    [
-      '/assets/images/col4-1.png',
-      '/assets/images/col4-2.png',
-      '/assets/images/col4-3.png',
-      '/assets/images/col4-4.png',
-      '/assets/images/col4-5.png',
-    ],
-    [
-      '/assets/images/col5-1.png',
-      '/assets/images/col5-2.png',
-      '/assets/images/col5-3.png',
-      '/assets/images/col5-4.png',
-      '/assets/images/col5-5.png',
-    ],
+    ['/assets/images/col1-1.png', '/assets/images/col1-2.png', '/assets/images/col1-3.png', '/assets/images/col1-4.png', '/assets/images/col1-5.png'],
+    ['/assets/images/col2-1.png', '/assets/images/col2-2.png', '/assets/images/col2-3.png', '/assets/images/col2-4.png', '/assets/images/col2-5.png'],
+    ['/assets/images/col3-1.png', '/assets/images/col3-2.png', '/assets/images/col3-3.png', '/assets/images/col3-4.png', '/assets/images/col3-5.png'],
+    ['/assets/images/col4-1.png', '/assets/images/col4-2.png', '/assets/images/col4-3.png', '/assets/images/col4-4.png', '/assets/images/col4-5.png'],
+    ['/assets/images/col5-1.png', '/assets/images/col5-2.png', '/assets/images/col5-3.png', '/assets/images/col5-4.png', '/assets/images/col5-5.png'],
   ]
 
-  // duplicate each column once to loop seamlessly
-  const columns = useMemo(
-    () => COL_IMAGES.map((col) => [...col, ...col]),
-    [COL_IMAGES]
-  )
+  const columns = useMemo(() => COL_IMAGES.map((col) => [...col, ...col]), [COL_IMAGES])
 
   return (
     <section className="wrap">
@@ -64,15 +29,10 @@ export default function InfiniteGallery({
 
       <div className="gallery" aria-label="Design gallery">
         {columns.map((col, idx) => {
-          const dir = idx % 2 === 0 ? 'up' : 'down' // 1,3,5 up; 2,4 down
-          // vary speed slightly per column
+          const dir = idx % 2 === 0 ? 'up' : 'down'
           const dur = 26 + idx * 2
           return (
-            <div
-              key={idx}
-              className={`col ${dir}`}
-              style={{ ['--dur' as any]: `${dur}s` }}
-            >
+            <div key={idx} className={`col ${dir}`} style={{ ['--dur' as any]: `${dur}s` }}>
               <div className="stack">
                 {col.map((src, i) => (
                   <figure key={i} className="card">
@@ -84,19 +44,19 @@ export default function InfiniteGallery({
           )
         })}
 
-        {/* top/bottom fades */}
         <div className="fade fade-top" aria-hidden />
         <div className="fade fade-bottom" aria-hidden />
       </div>
 
-      <button
-        className="cta"
-        onClick={onButtonClick || (() => {})}
-        type="button"
-        aria-label={buttonText}
-      >
-        {buttonText}
-      </button>
+      {/* ✅ same button style as ContactUs */}
+      <div className="wpforms-submit-container center">
+        <button
+          type="button"
+          className="wpforms-submit"
+          data-label={buttonText}
+          onClick={onButtonClick || (() => {})}
+        />
+      </div>
 
       <style jsx>{`
         .wrap {
@@ -115,7 +75,7 @@ export default function InfiniteGallery({
           margin-bottom: 10px;
         }
         .title span {
-        color: #ffd700;
+          color: #ffd700;
           font-family: 'Great Vibes', cursive;
           margin-left: 6px;
         }
@@ -128,20 +88,8 @@ export default function InfiniteGallery({
           grid-template-columns: repeat(5, 1fr);
           gap: 18px;
           padding: 6px;
-          -webkit-mask-image: linear-gradient(
-            to bottom,
-            transparent 0%,
-            #000 10%,
-            #000 90%,
-            transparent 100%
-          );
-          mask-image: linear-gradient(
-            to bottom,
-            transparent 0%,
-            #000 10%,
-            #000 90%,
-            transparent 100%
-          );
+          -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 10%, #000 90%, transparent 100%);
+          mask-image: linear-gradient(to bottom, transparent 0%, #000 10%, #000 90%, transparent 100%);
         }
 
         .col {
@@ -152,7 +100,6 @@ export default function InfiniteGallery({
           position: relative;
         }
 
-        /* one long vertical stack that loops */
         .stack {
           display: grid;
           gap: 18px;
@@ -164,8 +111,6 @@ export default function InfiniteGallery({
         .col.down .stack {
           animation-name: scrollDown;
         }
-
-        /* pause all when hovered */
         .gallery:hover .stack {
           animation-play-state: paused;
         }
@@ -174,8 +119,7 @@ export default function InfiniteGallery({
           margin: 0;
           border-radius: 12px;
           background: #0b0b0b;
-          box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45),
-            inset 0 0 0 1px rgba(255, 255, 255, 0.06);
+          box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45), inset 0 0 0 1px rgba(255, 255, 255, 0.06);
           overflow: hidden;
         }
         .card img {
@@ -203,32 +147,59 @@ export default function InfiniteGallery({
           background: linear-gradient(to top, #000, transparent);
         }
 
-        .cta {
-          display: block;
-          margin: 24px auto 0;
-          padding: 10px 22px;
+        /* === Gold gradient Elementor button === */
+        .wpforms-submit-container.center {
+          display: flex;
+          justify-content: center;
+          margin-top: 40px;
+        }
+        .wpforms-submit {
+          width: 160px;
+          height: 44px;
+          border: none;
           border-radius: 10px;
-          border: 1px solid #77530a;
           background: linear-gradient(
             to right,
             #77530a,
             #ffd277,
             #77530a,
-            #ffd277
+            #77530a,
+            #ffd277,
+            #77530a
           );
           background-size: 200%;
           background-position: left;
-          color: #000;
-          font-weight: 600;
+          color: #ffd277;
+          position: relative;
+          display: flex;
+          align-items: center;
+          justify-content: center;
           cursor: pointer;
-          transition: background-position 0.8s ease;
-          box-shadow: 0 6px 18px rgba(255, 210, 119, 0.15);
+          transition: background-position 1s;
+          overflow: hidden;
         }
-        .cta:hover {
+        .wpforms-submit::before {
+          position: absolute;
+          content: attr(data-label);
+          color: #ffd277;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          width: 97%;
+          height: 90%;
+          border-radius: 8px;
+          background-color: rgba(0, 0, 0, 0.84);
+          background-size: 200%;
+          background-position: left;
+          transition: background-position 1s;
+        }
+        .wpforms-submit:hover {
+          background-position: right;
+        }
+        .wpforms-submit:hover::before {
           background-position: right;
         }
 
-        /* keyframes for infinite marquee */
         @keyframes scrollUp {
           0% {
             transform: translateY(0);
@@ -246,7 +217,6 @@ export default function InfiniteGallery({
           }
         }
 
-        /* responsive */
         @media (max-width: 1100px) {
           .gallery {
             grid-template-columns: repeat(4, 1fr);

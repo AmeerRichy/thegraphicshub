@@ -60,3 +60,10 @@ body::-webkit-scrollbar-thumb {
   background: #ffd700;
   border-radius: 3px;
 }
+
+
+@media (hover: hover) and (pointer: fine) {
+  html.has-custom-cursor, html.has-custom-cursor * {
+    cursor: none !important;
+  }
+}

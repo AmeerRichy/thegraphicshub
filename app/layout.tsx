@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Playfair_Display, Great_Vibes, Poppins } from "next/font/google";
 import "./globals.css";
+import MagicWandCursor from "@/app/components/CustomCursor"; // ← use this
 
 const playfair = Playfair_Display({ subsets: ["latin"], weight: ["400", "700"], variable: "--font-playfair" });
 const greatVibes = Great_Vibes({ subsets: ["latin"], weight: ["400"], variable: "--font-greatvibes" });
@@ -11,23 +12,15 @@ export const metadata: Metadata = {
   description: "You dream it, we design it!",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <body
         className={`${playfair.variable} ${greatVibes.variable} ${poppins.variable} antialiased`}
-        style={{
-          margin: 0,
-          padding: 0,
-          backgroundColor: "#000",
-          color: "#fff",
-        }}
+        style={{ margin: 0, padding: 0, backgroundColor: "#000", color: "#fff" }}
       >
         {children}
+        <MagicWandCursor /> {/* ← mount here */}
       </body>
     </html>
   );
