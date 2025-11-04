@@ -19,6 +19,11 @@ export default function MagicWandCursor() {
   const pool = useRef<Particle[]>([])
   const rafId = useRef<number | null>(null)
 
+  // >>> fixed diagonal angle (lock orientation). -45deg. Use Math.PI/4 for the opposite diagonal.
+  const WAND_ANGLE = -Math.PI / 4
+  const AX = Math.cos(WAND_ANGLE)
+  const AY = Math.sin(WAND_ANGLE)
+
   const palette = [
     { h: 50, s: 100, l: 50, glow: 0.9 },
     { h: 48, s: 95,  l: 75, glow: 0.6 },
@@ -52,7 +57,6 @@ export default function MagicWandCursor() {
     for (let i = 0; i < 600; i++) pool.current.push(makeParticle(0, 0))
 
     let mouseX = 0, mouseY = 0, isMoving = false, lastMoveTime = 0
-    let angle = 0
 
     const onMove = (e: MouseEvent) => {
       mouseX = e.clientX
@@ -76,44 +80,40 @@ export default function MagicWandCursor() {
     const tick = () => {
       vel.current.x = mouseX - pos.current.x
       vel.current.y = mouseY - pos.current.y
-      
+
       pos.current.x = lerp(pos.current.x, mouseX, 0.15)
       pos.current.y = lerp(pos.current.y, mouseY, 0.15)
 
       const speed = Math.hypot(vel.current.x, vel.current.y)
 
-      if (speed > 0.3) {
-        angle = Math.atan2(vel.current.y, vel.current.x)
-      }
-
       if (performance.now() - lastMoveTime > 100) {
         isMoving = false
       }
 
-      // Update wand position - star is at the tip
+      // Update wand position — orientation locked to WAND_ANGLE
       const wand = wandRef.current
       if (wand) {
         wand.style.left = pos.current.x + 'px'
         wand.style.top = pos.current.y + 'px'
-        wand.style.transform = `translate(-50%, -50%) rotate(${angle}rad)`
+        wand.style.transform = `translate(-50%, -50%) rotate(${WAND_ANGLE}rad)`
       }
 
-      // Emit sparkles from tip
+      // Emit sparkles from the fixed tip direction (along the locked diagonal)
       if (isMoving && speed > 0.5) {
-        const ux = speed ? vel.current.x / speed : 0
-        const uy = speed ? vel.current.y / speed : 0
-        const spawnX = pos.current.x - ux * 15
-        const spawnY = pos.current.y - uy * 15
+        // tip is "ahead"; spawn slightly behind the tip along the negative axis
+        const spawnX = pos.current.x - AX * 15
+        const spawnY = pos.current.y - AY * 15
         const emission = Math.min(14, 2 + Math.floor(speed * 0.2))
         for (let i = 0; i < emission; i++) {
-          emitOne(spawnX, spawnY, vel.current.x * 0.4, vel.current.y * 0.4)
+          // push particles roughly along the wand axis (plus a little spread)
+          emitOne(spawnX, spawnY, AX, AY)
         }
       }
 
       // Draw particles
       ctx.clearRect(0, 0, cvs.width, cvs.height)
       ctx.globalCompositeOperation = 'lighter'
-      
+
       for (let i = particles.current.length - 1; i >= 0; i--) {
         const p = particles.current[i]
         p.life++
@@ -127,9 +127,14 @@ export default function MagicWandCursor() {
         const alpha = (1 - t) * 0.9
         const size = p.size * (1 - t * 0.5)
 
+        const grdSize = size * (1 + p.glow * 0.6)
+        const g = ctx.createRadialGradient(p.x, p.y, 0, p.x, p.y, grdSize)
+        g.addColorStop(0, `hsla(${p.hue} ${p.sat}% ${Math.min(100, p.light + 10)}% / ${alpha})`)
+        g.addColorStop(1, `hsla(${p.hue} ${p.sat}% ${p.light}% / 0)`)
+
         ctx.beginPath()
-        ctx.fillStyle = `hsla(${p.hue} ${p.sat}% ${p.light}% / ${alpha})`
-        ctx.arc(p.x, p.y, size, 0, Math.PI * 2)
+        ctx.fillStyle = g
+        ctx.arc(p.x, p.y, grdSize, 0, Math.PI * 2)
         ctx.fill()
 
         if (p.life >= p.maxLife) {
@@ -137,7 +142,7 @@ export default function MagicWandCursor() {
           pool.current.push(p)
         }
       }
-      
+
       ctx.globalCompositeOperation = 'source-over'
       rafId.current = requestAnimationFrame(tick)
     }
@@ -152,14 +157,18 @@ export default function MagicWandCursor() {
       window.removeEventListener('mouseout', onLeave)
       window.removeEventListener('mousedown', onDown)
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  const emitOne = (x: number, y: number, vx: number, vy: number) => {
+  const emitOne = (x: number, y: number, ax: number, ay: number) => {
     const p = pool.current.length ? pool.current.pop()! : makeParticle(x, y)
     const c = palette[Math.floor(Math.random() * palette.length)]
-    const dir = Math.atan2(vy, vx) + (Math.random() - 0.5) * 0.8
-    const spd = 0.5 + Math.random() * 1.5
-    
+
+    // center direction is along the fixed axis, with small angular jitter
+    const base = Math.atan2(ay, ax)
+    const dir = base + (Math.random() - 0.5) * 0.8
+    const spd = 0.8 + Math.random() * 1.6
+
     p.x = x
     p.y = y
     p.vx = Math.cos(dir) * spd
@@ -171,7 +180,7 @@ export default function MagicWandCursor() {
     p.sat = c.s
     p.light = c.l
     p.glow = c.glow
-    
+
     particles.current.push(p)
   }
 
@@ -181,7 +190,7 @@ export default function MagicWandCursor() {
       const c = palette[Math.floor(Math.random() * palette.length)]
       const dir = Math.random() * Math.PI * 2
       const spd = 1.5 + Math.random() * 3.5
-      
+
       p.x = x
       p.y = y
       p.vx = Math.cos(dir) * spd
@@ -193,7 +202,7 @@ export default function MagicWandCursor() {
       p.sat = c.s
       p.light = c.l
       p.glow = 1
-      
+
       particles.current.push(p)
     }
   }
@@ -216,8 +225,7 @@ export default function MagicWandCursor() {
           zIndex: 9999,
         }}
       >
-        <svg width="50" height="110" viewBox="0 0 80 180" style={{ display: 'block', marginLeft: -25, marginTop: -25 }}>
-          {/* Wand stick with spiral stripes */}
+        <svg width="30" height="110" viewBox="0 0 80 180" style={{ display: 'block', marginLeft: -25, marginTop: -25 }}>
           <defs>
             <linearGradient id="stickGrad" x1="0%" y1="0%" x2="100%">
               <stop offset="0%" stopColor="#E8A500" />
@@ -225,11 +233,7 @@ export default function MagicWandCursor() {
               <stop offset="100%" stopColor="#E8A500" />
             </linearGradient>
           </defs>
-          
-          {/* Main stick */}
           <rect x="35" y="40" width="10" height="120" rx="5" fill="url(#stickGrad)" />
-          
-          {/* Spiral stripes on stick */}
           <g opacity="0.6">
             <line x1="36" y1="50" x2="44" y2="50" stroke="#D49500" strokeWidth="1" />
             <line x1="36" y1="60" x2="44" y2="60" stroke="#D49500" strokeWidth="1" />
@@ -241,22 +245,9 @@ export default function MagicWandCursor() {
             <line x1="36" y1="120" x2="44" y2="120" stroke="#D49500" strokeWidth="1" />
             <line x1="36" y1="130" x2="44" y2="130" stroke="#D49500" strokeWidth="1" />
           </g>
-
-          {/* Star head */}
           <g transform="translate(40, 20)">
-            {/* Main star */}
-            <polygon 
-              points="0,-18 4,-6 15,-6 7,0 11,12 0,6 -11,12 -7,0 -15,-6 -4,-6" 
-              fill="#FFD700"
-            />
-            {/* Star shine/highlight */}
-            <polygon 
-              points="0,-18 4,-6 15,-6 7,0 11,12 0,6 -11,12 -7,0 -15,-6 -4,-6" 
-              fill="#FFED4E"
-              opacity="0.6"
-            />
-            
-            {/* Sparkle dots on star */}
+            <polygon points="0,-18 4,-6 15,-6 7,0 11,12 0,6 -11,12 -7,0 -15,-6 -4,-6" fill="#FFD700" />
+            <polygon points="0,-18 4,-6 15,-6 7,0 11,12 0,6 -11,12 -7,0 -15,-6 -4,-6" fill="#FFED4E" opacity="0.6" />
             <circle cx="5" cy="-8" r="2" fill="#FFF" opacity="0.9" />
             <circle cx="10" cy="2" r="1.5" fill="#FFF" opacity="0.7" />
             <circle cx="-8" cy="5" r="1.5" fill="#FFF" opacity="0.7" />

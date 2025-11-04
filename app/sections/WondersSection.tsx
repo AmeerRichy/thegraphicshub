@@ -19,6 +19,7 @@ const cards = [
 
 export default function WondersSection() {
   const [hovered, setHovered] = useState<{ title: string; desc: string } | null>(null)
+  const [hoveredCard, setHoveredCard] = useState<number | null>(null)
   const [animate, setAnimate] = useState(false)
   const sectionRef = useRef<HTMLDivElement | null>(null)
 
@@ -48,10 +49,16 @@ export default function WondersSection() {
         {cards.map((card) => (
           <div
             key={card.i}
-            className={`card ${animate ? 'visible' : ''}`}
+            className={`card ${animate ? 'visible' : ''} ${hoveredCard === card.i ? 'lifted' : ''}`}
             style={{ '--i': card.i } as React.CSSProperties}
-            onMouseEnter={() => setHovered({ title: card.title, desc: card.desc })}
-            onMouseLeave={() => setHovered(null)}
+            onMouseEnter={() => {
+              setHovered({ title: card.title, desc: card.desc })
+              setHoveredCard(card.i)
+            }}
+            onMouseLeave={() => {
+              setHovered(null)
+              setHoveredCard(null)
+            }}
           >
             <Image
               src={card.img}
@@ -137,7 +144,7 @@ export default function WondersSection() {
           opacity: 0;
           transform-origin: 50% 250%;
           transform: translateY(80px) scale(0.8);
-          transition: all 1s ease;
+          transition: all 0.4s ease;
         }
 
         /* 🎬 Animation after scroll */
@@ -148,10 +155,14 @@ export default function WondersSection() {
             scale(1);
         }
 
-        .card:hover {
-          transform: rotate(calc(var(--i) * 12deg)) translate(calc(var(--i) * 10px), -40px);
+        /* ⬆️ Lifted hover state - only lift, no other transforms */
+        .card.lifted {
+          transform: rotate(calc(var(--i) * 12deg))
+            translate(calc(var(--i) * -15px), -40px)
+            scale(1) !important;
           background-position: right;
           background-size: 200%;
+          filter: drop-shadow(0 20px 40px rgba(255, 215, 0, 0.4));
         }
 
         .title-display {
@@ -190,6 +201,11 @@ export default function WondersSection() {
             transform: rotate(calc(var(--i) * 10deg)) translate(calc(var(--i) * -10px), 40px)
               scale(1);
           }
+          .card.lifted {
+            transform: rotate(calc(var(--i) * 10deg)) 
+              translate(calc(var(--i) * -10px), -25px)
+              scale(1) !important;
+          }
           .card {
             width: 150px;
             height: 220px;
@@ -213,6 +229,11 @@ export default function WondersSection() {
           .animate .card.visible {
             transform: rotate(calc(var(--i) * 8deg)) translate(calc(var(--i) * -2px), 70px)
               scale(1);
+          }
+          .card.lifted {
+            transform: rotate(calc(var(--i) * 8deg)) 
+              translate(calc(var(--i) * -2px), 40px)
+              scale(1) !important;
           }
           .title-display {
             bottom: -60px;
