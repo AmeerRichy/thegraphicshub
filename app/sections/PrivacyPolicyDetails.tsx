@@ -169,7 +169,7 @@ export default function PrivacyPolicyDetails() {
           max-width: 960px;
           margin: 0 auto;
           padding: 0 20px;
-          font-family: 'Poppins', sans-serif;
+font-family: 'Arima', sans-serif;
           font-size: 16px;
           line-height: 1.7;
         }
@@ -181,7 +181,7 @@ export default function PrivacyPolicyDetails() {
           font-size: 18px;
           font-weight: 700;
           margin: 0 0 10px;
-          font-family: 'Playfair Display', serif;
+          font-family: 'Arima', serif;
         }
 
         p { margin: 0 0 10px; color: rgba(255,255,255,.78); }

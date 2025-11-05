@@ -173,6 +173,7 @@ const Header = () => {
           line-height: 1;
           letter-spacing: 0.2px;
           transition: color 0.25s ease;
+          font-family: 'Arima', serif;
         }
         .gh-link:focus-visible {
           outline: 2px solid #ffd700;

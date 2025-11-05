@@ -57,7 +57,7 @@ export default function TermsConditionsHeroExact({
           transform: translateY(-55%);
           margin: 0;
           text-align: left;
-          font-family: 'Playfair Display', serif;
+          font-family: 'Arima', serif;
           font-weight: 700;
           font-size: clamp(2.6rem, 6vw, 4rem);
           line-height: 1.05;
@@ -67,7 +67,7 @@ export default function TermsConditionsHeroExact({
 
         .highlight {
           color: #f0c64a;
-          font-family: 'Great Vibes', cursive;
+          font-family: 'Corinthia, Sans-serif';
           font-weight: 400;
           margin-left: 6px;
         }

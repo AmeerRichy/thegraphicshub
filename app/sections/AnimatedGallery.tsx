@@ -70,13 +70,13 @@ export default function InfiniteGallery({
           text-align: center;
           font-size: 3rem;
           font-weight: 700;
-          font-family: 'Playfair Display', serif;
+          font-family: 'Arima', serif;
           color: #fff;
           margin-bottom: 10px;
         }
         .title span {
           color: #ffd700;
-          font-family: 'Great Vibes', cursive;
+          font-family: 'Corinthia, Sans-serif';
           margin-left: 6px;
         }
 

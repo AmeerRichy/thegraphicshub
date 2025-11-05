@@ -21,7 +21,7 @@ export default function VisionMissionSection() {
         <div>
           <h3
             style={{
-              fontFamily: 'Playfair Display, serif',
+              fontFamily: 'Arima, serif',
               fontWeight: 700,
               color: '#F0C64A',
               textAlign: 'center',
@@ -37,7 +37,7 @@ export default function VisionMissionSection() {
             style={{
               maxWidth: 560,
               margin: '0 auto',
-              fontFamily: 'Poppins, sans-serif',
+              fontFamily: 'arima, sans-serif',
               fontSize: 'clamp(0.95rem, 1.02vw, 1.05rem)',
               lineHeight: 1.9,
               color: '#cfcfcf',
@@ -82,7 +82,7 @@ export default function VisionMissionSection() {
         >
           <h3
             style={{
-              fontFamily: 'Playfair Display, serif',
+              fontFamily: 'Arima, serif',
               fontWeight: 700,
               color: '#F0C64A',
               textAlign: 'center',
@@ -98,7 +98,7 @@ export default function VisionMissionSection() {
             style={{
               maxWidth: 560,
               margin: '0 auto',
-              fontFamily: 'Poppins, sans-serif',
+              fontFamily: 'arima, sans-serif',
               fontSize: 'clamp(0.95rem, 1.02vw, 1.05rem)',
               lineHeight: 1.9,
               color: '#cfcfcf',

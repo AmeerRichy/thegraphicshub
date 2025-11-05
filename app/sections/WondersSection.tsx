@@ -102,12 +102,12 @@ export default function WondersSection() {
         .title {
           font-size: 3rem;
           font-weight: 700;
-          font-family: 'Playfair Display', serif;
+          font-family: 'Arima', serif;
         }
 
         .title span {
           color: #ffd700;
-          font-family: 'Great Vibes', cursive;
+          font-family: 'Corinthia', serif;
           margin-left: 6px;
         }
 
@@ -116,7 +116,7 @@ export default function WondersSection() {
           color: rgba(255, 255, 255, 0.8);
           max-width: 650px;
           margin: 20px auto 60px;
-          font-family: 'Poppins', sans-serif;
+          font-family: 'Arima', sans-serif;
         }
 
         .card-container {

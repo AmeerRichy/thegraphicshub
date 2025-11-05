@@ -44,7 +44,7 @@ export default function MagicAwaitsSection() {
         <div style={{ textAlign: 'center' }}>
           <h3
             style={{
-              fontFamily: 'Playfair Display, serif',
+              fontFamily: 'Arima, serif',
               fontWeight: 700,
               color: '#F0C64A',
               fontSize: 'clamp(2rem, 4vw, 2.6rem)',
@@ -59,7 +59,7 @@ export default function MagicAwaitsSection() {
             style={{
               maxWidth: 640,
               margin: '0 auto',
-              fontFamily: 'Poppins, sans-serif',
+              fontFamily: 'Arima, sans-serif',
               fontSize: 'clamp(0.98rem, 1.05vw, 1.06rem)',
               lineHeight: 1.9,
               color: '#cfcfcf',

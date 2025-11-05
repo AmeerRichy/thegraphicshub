@@ -83,7 +83,7 @@ export default function Footer() {
       style={{
         backgroundColor: '#000',
         color: '#fff',
-        fontFamily: 'Poppins, sans-serif',
+        fontFamily: 'Arima, sans-serif',
         borderTop: '3px solid #d4af37',
         overflow: 'hidden',
         position: 'relative',

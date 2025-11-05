@@ -34,7 +34,7 @@ export default function FinaleCtaSection() {
             maxWidth: 980,
             margin: '0 auto 34px',
             textAlign: 'center',
-            fontFamily: 'Poppins, sans-serif',
+            fontFamily: 'Arima, sans-serif',
             fontSize: 'clamp(0.98rem, 1.05vw, 1.06rem)',
             lineHeight: 1.95,
             color: '#cfd3db',

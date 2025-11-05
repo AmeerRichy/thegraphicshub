@@ -247,8 +247,8 @@ export default function MysticPortalExact() {
         .rail__dot.is-active { background: #ffcc00; color: #000; transform: scale(1.04); }
         .glass { position: relative; border-radius: 10px; padding: 32px 36px 28px; background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.12); backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px); }
         .title { margin: 0 0 16px 0; font-family: 'Playfair Display', serif; font-weight: 700; font-size: clamp(32px, 5vw, 54px); }
-        .script { font-family: 'Great Vibes', cursive; color: #ffcc00; }
-        .desc { margin: 0 0 20px 0; max-width: 560px; line-height: 1.7; color: #eaeaea; font-family: 'Poppins', sans-serif; }
+        .script { font-family: 'Corinthia', cursive; color: #ffcc00; }
+        .desc { margin: 0 0 20px 0; max-width: 560px; line-height: 1.7; color: #eaeaea; font-family: 'Arima', sans-serif; }
         .cards { position: relative; display: grid; grid-template-columns: 1fr; align-items: center; overflow: visible; }
         .viewport { position: relative; width: calc(var(--view-cards) * var(--card-w) + (var(--view-cards) - 1) * var(--gap)); max-width: 100%; height: var(--card-h); overflow: hidden; clip-path: inset(-40px 0 -40px 0); border-radius: 8px; touch-action: pan-y; user-select: none; -webkit-user-select: none; cursor: grab; }
         .viewport:active { cursor: grabbing; }

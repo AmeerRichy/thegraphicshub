@@ -6,7 +6,7 @@ type Props = {
 };
 
 export default function FaqHeroExact({
-  artSrc = '/assets/images/faq-bubble-lamp.webp',
+  artSrc = '/assets/images/FAQs.webp',
 }: Props) {
   return (
     <section className="faq-hero">
@@ -53,7 +53,7 @@ export default function FaqHeroExact({
           transform: translateY(-42%);
           margin: 0;
           text-align: left;
-          font-family: 'Playfair Display', serif;
+          font-family: 'Arima', serif;
           font-weight: 700;
           font-size: clamp(2.6rem, 6vw, 4rem);
           line-height: 1.05;

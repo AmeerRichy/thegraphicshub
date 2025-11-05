@@ -324,17 +324,17 @@ export default function PraiseSection() {
         .praise-title {
           font-size: 3rem;
           font-weight: 700;
-          font-family: 'Playfair Display', serif;
+          font-family: 'Arima', serif;
           letter-spacing: 0.5px;
         }
         .praise-title span {
           color: #ffd700;
-          font-family: 'Great Vibes', cursive;
+          font-family: 'Corinthia, Sans-serif';
           margin-left: 8px;
         }
         .praise-subtitle {
           color: rgba(255, 255, 255, 0.82);
-          font-family: 'Poppins', sans-serif;
+font-family: 'Arima', sans-serif;
           max-width: 760px;
           margin: 18px auto 64px;
           font-size: 1.05rem;

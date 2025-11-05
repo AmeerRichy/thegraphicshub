@@ -75,13 +75,13 @@ const NarrativeSection = () => {
           font-size: clamp(2rem, 4vw, 3.5rem);
           font-weight: 700;
           margin-bottom: 30px;
-          font-family: 'Playfair Display', serif;
+          font-family: 'Arima', serif;
           word-break: break-word;
         }
 
         .highlight {
           color: #ffd700;
-          font-family: 'Great Vibes', cursive;
+          font-family: 'Corinthia' , serif;
           font-weight: 500;
           margin-left: 4px;
         }
@@ -90,7 +90,7 @@ const NarrativeSection = () => {
           line-height: 1.8;
           font-size: clamp(0.9rem, 1.1vw, 1.05rem);
           color: #ccc;
-          font-family: 'Poppins', sans-serif;
+          font-family: 'Arima', sans-serif;
           margin-bottom: 25px;
           text-align: justify;
           overflow-wrap: break-word;
@@ -102,7 +102,7 @@ const NarrativeSection = () => {
         }
 
         .narrative__cta {
-          font-family: 'Poppins', sans-serif;
+          font-family: 'Arima', sans-serif;
           color: #ffd700;
           margin-top: 20px;
           font-size: clamp(0.9rem, 1vw, 1rem);

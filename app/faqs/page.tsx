@@ -1,5 +1,6 @@
 import Footer from "../components/footer";
 import Header from "../components/header";
+import FAQSection from "../sections/FaqDetail";
 import FaqHeroExact from "../sections/FaqHero";
 import PrivacyPolicyHeroExact from "../sections/PolicyHero";
 import PrivacyPolicyDetails from "../sections/PrivacyPolicyDetails";
@@ -10,6 +11,7 @@ export default function faqs() {
       {/* <FaqHeroExact /> or your Privacy hero */}
       <Header/>
 <FaqHeroExact/>
+<FAQSection/>
  <Footer/>
     </>
   );

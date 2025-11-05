@@ -102,7 +102,7 @@ export default function ContactUs() {
         .page {
           background: var(--dark);
           color: #fff;
-          font-family: 'Poppins', system-ui, sans-serif;
+          font-family: 'Arima', sans-serif;
           padding: 150px 16px 110px;
         }
 
@@ -112,20 +112,20 @@ export default function ContactUs() {
           margin-bottom: 28px;
         }
         .big {
-          font-family: 'Playfair Display', serif;
+          font-family: 'Arima', serif;
           font-weight: 700;
           font-size: clamp(2.6rem, 6vw, 4rem);
           color: rgba(255, 255, 255, 0.85);
           margin: 0 0 10px;
         }
         .big span {
-          font-family: 'Great Vibes', cursive;
+          font-family: 'Corinthia, Sans-serif';
           color: #f0c64a;
           margin-left: 6px;
           font-weight: 400;
         }
         .sub {
-          font-family: 'Playfair Display', serif;
+          font-family: 'Arima', serif;
           color: #f0c64a;
           font-size: clamp(1.4rem, 2.6vw, 2rem);
           margin: 0 0 6px;

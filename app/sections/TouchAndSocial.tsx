@@ -113,7 +113,7 @@ export default function TouchAndSocial() {
           font-weight: 800;
           font-size: 28px;
           margin: 18px 0 12px;
-          font-family: 'Playfair Display', serif;
+          font-family: 'Arima', serif;
         }
         .title.spaced{ margin-top: 28px; }
 

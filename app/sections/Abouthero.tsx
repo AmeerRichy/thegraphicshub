@@ -26,7 +26,7 @@ export default function Abouthero() {
         {/* HEADING */}
         <h2
           style={{
-            fontFamily: 'Playfair Display, serif',
+            fontFamily: 'Arima, serif',
             fontWeight: 700,
             fontSize: 'clamp(2.6rem, 6vw, 4rem)',
             lineHeight: 1.05,
@@ -40,7 +40,7 @@ export default function Abouthero() {
           <span
             style={{
               color: '#F0C64A',
-              fontFamily: 'Great Vibes, cursive',
+              fontFamily: 'Corinthia, Sans-serif',
               fontWeight: 400,
               marginLeft: 6,
             }}
@@ -82,7 +82,7 @@ export default function Abouthero() {
             >
               <p
                 style={{
-                  fontFamily: 'Poppins, sans-serif',
+                  fontFamily: 'Arima, sans-serif',
                   lineHeight: 1.8,
                   fontSize: 'clamp(0.95rem, 1.1vw, 1.05rem)',
                   color: '#d7d7d7',
@@ -95,7 +95,7 @@ export default function Abouthero() {
 
               <p
                 style={{
-                  fontFamily: 'Poppins, sans-serif',
+                  fontFamily: 'Arima, sans-serif',
                   lineHeight: 1.9,
                   fontSize: 'clamp(0.95rem, 1.1vw, 1.05rem)',
                   color: '#cfcfcf',
@@ -109,7 +109,7 @@ export default function Abouthero() {
 
               <p
                 style={{
-                  fontFamily: 'Poppins, sans-serif',
+                  fontFamily: 'Arima, sans-serif',
                   lineHeight: 1.9,
                   fontSize: 'clamp(0.95rem, 1.1vw, 1.05rem)',
                   color: '#cfcfcf',

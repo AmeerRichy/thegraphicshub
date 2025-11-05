@@ -145,7 +145,7 @@ export default function PaymentPolicyDetails() {
           max-width: 960px;
           margin: 0 auto;
           padding: 0 20px;
-          font-family: 'Poppins', sans-serif;
+font-family: 'Arima', sans-serif;
           font-size: 16px;
           line-height: 1.7;
         }
@@ -159,7 +159,7 @@ export default function PaymentPolicyDetails() {
           font-size: 18px;
           font-weight: 700;
           margin: 0 0 10px;
-          font-family: 'Playfair Display', serif;
+          font-family: 'Arima', serif;
         }
 
         ul {
