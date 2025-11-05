@@ -1,5 +1,5 @@
 'use client'
-import { useState, useRef, useEffect } from 'react'
+import { useState } from 'react'
 import Image from 'next/image'
 
 export default function ContactUs() {
@@ -29,8 +29,7 @@ export default function ContactUs() {
       {/* ===== Top Headings ===== */}
       <header className="head">
         <h1 className="big">
-          Contact
-          <span>Us</span>
+          Contact <span>Us</span>
         </h1>
         <h2 className="sub">Reach Us Out</h2>
         <p className="subdesc">Let us know how to get back to you!</p>
@@ -38,7 +37,7 @@ export default function ContactUs() {
 
       {/* ===== Image + Form Row ===== */}
       <div className="container">
-        {/* LEFT: Image same height as form */}
+        {/* LEFT: Image — matches form height on desktop */}
         <div className="photoCard">
           <Image
             src="/assets/images/10-e1731652606915.png"
@@ -49,7 +48,7 @@ export default function ContactUs() {
           />
         </div>
 
-        {/* RIGHT: Original form */}
+        {/* RIGHT: Form */}
         <div className="right">
           <div className="formBox">
             <h3>Get In Touch</h3>
@@ -119,18 +118,20 @@ export default function ContactUs() {
           margin: 0 0 10px;
         }
         .big span {
-          font-family: 'Corinthia, Sans-serif';
-          color: #f0c64a;
-          margin-left: 6px;
-          font-weight: 400;
+          color: #ffd700;
+          font-family: 'Corinthia', serif;
+          font-size: clamp(3rem, 4vw, 5rem);
+          font-weight: 500;
+          margin-left: -15px;
         }
         .sub {
           font-family: 'Arima', serif;
-          color: #f0c64a;
+          color: #ffd700;
           font-size: clamp(1.4rem, 2.6vw, 2rem);
           margin: 0 0 6px;
         }
         .subdesc {
+          font-family: 'Arima', serif;
           color: #cfd3db;
           opacity: 0.9;
           margin: 0;
@@ -144,25 +145,26 @@ export default function ContactUs() {
           display: grid;
           grid-template-columns: 1fr 1.05fr;
           gap: 40px;
-          align-items: stretch; /* 👈 makes both same height */
+          align-items: stretch; /* equalize heights */
         }
 
-        /* Image same height as formBox */
         .photoCard {
           position: relative;
           width: 100%;
+          height: 100%; /* 👈 makes it follow the row height (same as form) */
+          min-height: 420px;
           border-radius: 20px;
           box-shadow: 0 18px 40px rgba(0, 0, 0, 0.45);
           overflow: hidden;
         }
 
-        /* ===== Original Form Styles ===== */
         .right {
           display: flex;
-          align-items: center;
+          align-items: stretch; /* stretch child to full height */
           justify-content: center;
           padding: 0;
         }
+
         .formBox {
           width: 100%;
           max-width: 600px;
@@ -172,9 +174,12 @@ export default function ContactUs() {
           padding: 50px 60px;
           box-shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
           height: 100%; /* 👈 ensures full stretch */
+          display: flex;
+          flex-direction: column;
         }
         .formBox h3 {
           font-size: 2rem;
+          font-family: 'Arima', sans-serif !important;
           font-weight: 600;
           margin-bottom: 8px;
           color: var(--beige);
@@ -192,6 +197,7 @@ export default function ContactUs() {
         }
         .field {
           flex: 1;
+          min-width: 220px;
           display: flex;
           flex-direction: column;
           gap: 6px;
@@ -206,9 +212,9 @@ export default function ContactUs() {
           background: #141414;
           border: 1px solid #2a2a2a;
           color: #fff;
-          padding: 12px 14px;
-          border-radius: 8px;
-          font-size: 0.95rem;
+          padding: 14px 14px; /* better touch target */
+          border-radius: 10px;
+          font-size: 1rem;
           outline: none;
           transition: border-color 0.2s, box-shadow 0.2s;
         }
@@ -217,17 +223,22 @@ export default function ContactUs() {
           border-color: var(--teal);
           box-shadow: 0 0 0 3px rgba(1, 129, 117, 0.25);
         }
+        textarea {
+          resize: vertical;
+        }
 
         /* === Gold Button === */
         .wpforms-submit-container {
           display: flex;
           justify-content: flex-end;
+          margin-top: 8px;
         }
         .wpforms-submit {
           width: 150px;
-          height: 40px;
+          height: 44px;
           border: none;
-          border-radius: 10px;
+          font-family: 'Arima', serif;
+          border-radius: 12px;
           background: linear-gradient(
             to right,
             #77530a,
@@ -251,13 +262,13 @@ export default function ContactUs() {
         .wpforms-submit::before {
           position: absolute;
           content: 'Submit';
-          color: #ffd277;
+          color: #ffd700;
           display: flex;
           align-items: center;
           justify-content: center;
           width: 97%;
           height: 90%;
-          border-radius: 8px;
+          border-radius: 10px;
           background-color: rgba(0, 0, 0, 0.84);
           background-size: 200%;
           background-position: left;
@@ -275,26 +286,90 @@ export default function ContactUs() {
         }
 
         .status {
-          font-size: 0.9rem;
-          margin-top: 10px;
-          opacity: 0.85;
+          font-size: 0.95rem;
+          margin-top: 12px;
+          opacity: 0.9;
         }
 
         /* ===== Responsive ===== */
+        @media (max-width: 1200px) {
+          .container {
+            gap: 32px;
+          }
+          .formBox {
+            padding: 44px 48px;
+          }
+        }
+
         @media (max-width: 1024px) {
           .container {
-            grid-template-columns: 1fr;
+            grid-template-columns: 1fr; /* stack */
             gap: 28px;
-          }
-          .photoCard {
-            aspect-ratio: 16/9;
-            height: auto;
           }
           .right {
             padding: 0 6px;
           }
+          .photoCard {
+            height: auto;           /* stop syncing to form height in single column */
+            min-height: unset;
+            aspect-ratio: 16 / 9;   /* clean mobile crop */
+          }
           .wpforms-submit-container {
             justify-content: center;
+          }
+        }
+
+        @media (max-width: 768px) {
+          .page {
+            padding: 150px 14px 90px;
+          }
+          .formBox {
+            max-width: 720px;
+            padding: 36px 28px;
+            border-radius: 16px;
+          }
+          .row {
+            gap: 14px;
+          }
+          .field {
+            min-width: 100%;
+          }
+          .wpforms-submit {
+            width: 100%;
+          }
+        }
+
+        @media (max-width: 600px) {
+          .page {
+            padding: 100px 12px 70px;
+          }
+          .big {
+            margin-bottom: 6px;
+          }
+          .subdesc {
+            font-size: 0.95rem;
+          }
+          input,
+          textarea {
+            font-size: 1rem;
+            padding: 13px 12px;
+            border-radius: 10px;
+          }
+          .photoCard {
+            aspect-ratio: 4 / 3; /* slightly taller on small phones */
+            border-radius: 16px;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.42);
+          }
+        }
+
+        @media (max-width: 420px) {
+          .formBox {
+            padding: 28px 20px;
+            border-radius: 14px;
+          }
+          .wpforms-submit::before {
+            width: 96%;
+            height: 88%;
           }
         }
       `}</style>

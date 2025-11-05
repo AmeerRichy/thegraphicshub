@@ -106,9 +106,11 @@ export default function WondersSection() {
         }
 
         .title span {
-          color: #ffd700;
-          font-family: 'Corinthia', serif;
-          margin-left: 6px;
+              color: #ffd700;
+          font-family: 'Corinthia' , serif;
+       font-size: clamp(3rem, 4vw, 5rem);
+          font-weight: 500;
+          margin-left: -15px;
         }
 
         .subtitle {
@@ -192,7 +194,7 @@ export default function WondersSection() {
 
         @media (max-width: 768px) {
           .wonders {
-            padding: 120px 3% 160px;
+            padding: 10px 5% 100px;
           }
           .card-container {
             height: 300px;

@@ -1,6 +1,7 @@
 'use client'
 
 import { useMemo } from 'react'
+import { useRouter } from 'next/navigation'
 
 type GalleryProps = {
   buttonText?: string
@@ -11,6 +12,8 @@ export default function InfiniteGallery({
   buttonText = 'View All',
   onButtonClick,
 }: GalleryProps) {
+  const router = useRouter()
+
   const COL_IMAGES: string[][] = [
     ['/assets/images/col1-1.png', '/assets/images/col1-2.png', '/assets/images/col1-3.png', '/assets/images/col1-4.png', '/assets/images/col1-5.png'],
     ['/assets/images/col2-1.png', '/assets/images/col2-2.png', '/assets/images/col2-3.png', '/assets/images/col2-4.png', '/assets/images/col2-5.png'],
@@ -20,6 +23,9 @@ export default function InfiniteGallery({
   ]
 
   const columns = useMemo(() => COL_IMAGES.map((col) => [...col, ...col]), [COL_IMAGES])
+
+  // If parent didn't pass a handler, push to /services
+  const handleClick = onButtonClick ?? (() => router.push('/services'))
 
   return (
     <section className="wrap">
@@ -54,7 +60,8 @@ export default function InfiniteGallery({
           type="button"
           className="wpforms-submit"
           data-label={buttonText}
-          onClick={onButtonClick || (() => {})}
+          aria-label={buttonText}
+          onClick={handleClick}
         />
       </div>
 
@@ -76,8 +83,10 @@ export default function InfiniteGallery({
         }
         .title span {
           color: #ffd700;
-          font-family: 'Corinthia, Sans-serif';
-          margin-left: 6px;
+          font-family: 'Corinthia', serif;
+          font-size: clamp(3rem, 4vw, 5rem);
+          font-weight: 500;
+          margin-left: -15px;
         }
 
         .gallery {
@@ -156,6 +165,7 @@ export default function InfiniteGallery({
         .wpforms-submit {
           width: 160px;
           height: 44px;
+          font-family: 'Arima', serif;
           border: none;
           border-radius: 10px;
           background: linear-gradient(
@@ -201,39 +211,19 @@ export default function InfiniteGallery({
         }
 
         @keyframes scrollUp {
-          0% {
-            transform: translateY(0);
-          }
-          100% {
-            transform: translateY(-50%);
-          }
+          0% { transform: translateY(0); }
+          100% { transform: translateY(-50%); }
         }
         @keyframes scrollDown {
-          0% {
-            transform: translateY(-50%);
-          }
-          100% {
-            transform: translateY(0);
-          }
+          0% { transform: translateY(-50%); }
+          100% { transform: translateY(0); }
         }
 
-        @media (max-width: 1100px) {
-          .gallery {
-            grid-template-columns: repeat(4, 1fr);
-          }
-        }
-        @media (max-width: 900px) {
-          .gallery {
-            grid-template-columns: repeat(3, 1fr);
-          }
-        }
-        @media (max-width: 640px) {
-          .gallery {
-            grid-template-columns: repeat(2, 1fr);
-          }
-          .col {
-            height: 440px;
-          }
+        @media (max-width: 1100px) { .gallery { grid-template-columns: repeat(4, 1fr); } }
+        @media (max-width: 900px)  { .gallery { grid-template-columns: repeat(3, 1fr); } }
+        @media (max-width: 640px)  {
+          .gallery { grid-template-columns: repeat(2, 1fr); }
+          .col { height: 440px; }
         }
       `}</style>
     </section>

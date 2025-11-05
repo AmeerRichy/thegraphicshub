@@ -133,6 +133,7 @@ export default function Footer() {
                 style={{
                   color: '#d4af37',
                   fontSize: isMobile ? '15px' : '17px',
+                  fontFamily: 'Arima, sans-serif',
                   fontWeight: 700,
                   marginBottom: '35px',
                   letterSpacing: '1px',
@@ -249,6 +250,7 @@ export default function Footer() {
               <h3
                 style={{
                   color: '#d4af37',
+                  fontFamily: 'Arima, sans-serif',
                   fontSize: isMobile ? '15px' : '17px',
                   fontWeight: 700,
                   marginBottom: '35px',
@@ -307,35 +309,46 @@ export default function Footer() {
           </div>
 
           {/* Right GH */}
-          <div style={{ textAlign: isMobile ? 'left' : 'right', maxWidth: isMobile ? '100%' : '420px' }}>
-            <div
-              style={{
-                fontSize: isMobile ? '80px' : '110px',
-                fontWeight: 900,
-                color: '#d4af37',
-                marginBottom: '25px',
-                letterSpacing: '-4px',
-                lineHeight: '0.9',
-                textShadow: '0 0 40px rgba(212,175,55,0.25)',
-                cursor: 'default',
-              }}
-            >
-              GH
-            </div>
-            <p
-              style={{
-                color: '#999',
-                fontSize: isMobile ? '12px' : '13.5px',
-                lineHeight: '1.9',
-                fontStyle: 'italic',
-                fontWeight: 300,
-              }}
-            >
-              "Graphics Hub" is your one-stop solution for stunning visual experiences. We specialize in
-              creating captivating designs for social media, websites, branding, 3D, interiors, exteriors, &
-              print materials. Let us elevate your brand with our expertise.
-            </p>
-          </div>
+          <div
+  style={{
+    textAlign: isMobile ? 'left' : 'right',
+    maxWidth: isMobile ? '100%' : '420px',
+  }}
+>
+  <div
+    style={{
+      marginBottom: '25px',
+      cursor: 'default',
+      display: 'inline-block',
+      filter: 'drop-shadow(0 0 40px rgba(212,175,55,0.25))',
+    }}
+  >
+    <img
+      src="/assets/images/logo.png"
+      alt="Graphics Hub Logo"
+      style={{
+        width: isMobile ? '160px' : '220px',
+        height: 'auto',
+        objectFit: 'contain',
+      }}
+    />
+  </div>
+
+  <p
+    style={{
+      color: '#999',
+      fontSize: isMobile ? '12px' : '13.5px',
+      lineHeight: '1.9',
+      fontStyle: 'italic',
+      fontWeight: 300,
+    }}
+  >
+    "Graphics Hub" is your one-stop solution for stunning visual experiences. We specialize in
+    creating captivating designs for social media, websites, branding, 3D, interiors, exteriors, & print
+    materials. Let us elevate your brand with our expertise.
+  </p>
+</div>
+
         </div>
 
         {/* Divider */}

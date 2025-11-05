@@ -289,8 +289,7 @@ export default function ServicesPage() {
 
         .title span {
           color: #ffd700;
-          font-family: 'Corinthia, Sans-serif';
-          margin-left: 6px;
+          font-family: 'Corinthia' , serif; font-size: clamp(3rem, 4vw, 5rem); font-weight: 500; margin-left: -15px;
         }
 
         /* rest stays identical */
@@ -325,6 +324,7 @@ export default function ServicesPage() {
           color: #d8d8d8;
           font-size: clamp(14px, 2vw, 16px);
           cursor: pointer;
+          font-family: 'Arima', serif;
           padding: 6px 2px;
           transition: color .25s ease, transform .25s ease;
         }
@@ -345,6 +345,7 @@ export default function ServicesPage() {
           top: 0;
           bottom: 0;
           width: 38px;
+            font-family: 'Arima', serif;
           display: flex;
           align-items: center;
           justify-content: center;

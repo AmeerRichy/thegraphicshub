@@ -65,10 +65,8 @@ export default function PaymentPolicyHeroExact({
         }
 
         .highlight {
-          color: #f0c64a;
-          font-family: 'Corinthia, Sans-serif';
-          font-weight: 400;
-          margin-left: 6px;
+         color: #ffd700;
+          font-family: 'Corinthia' , serif; font-size: clamp(3rem, 4vw, 5rem); font-weight: 500; margin-left: 2px;
         }
 
         /* Art */

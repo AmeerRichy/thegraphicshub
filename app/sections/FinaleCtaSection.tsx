@@ -53,7 +53,7 @@ export default function FinaleCtaSection() {
             type="button"
             className="wpforms-submit"
             data-label="Let the Magic Begin!" // <- button text lives here
-            onClick={() => (window.location.href = '#contact')}
+            onClick={() => (window.location.href = '/contact-us')}
           />
         </div>
       </div>
@@ -65,31 +65,34 @@ export default function FinaleCtaSection() {
           justify-content: center;
         }
         .wpforms-submit {
-          width: 180px;
-          height: 44px;
-          border: none;
-          border-radius: 10px;
-          background: linear-gradient(
-            to right,
-            #77530a,
-            #ffd277,
-            #77530a,
-            #77530a,
-            #ffd277,
-            #77530a
-          );
-          background-size: 200%;
-          background-position: left;
-          position: relative;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          cursor: pointer;
-          transition: background-position 1s;
-          overflow: hidden;
-          /* keep color same as your ContactUs */
-          color: #ffd277;
-        }
+  width: 180px;
+  height: 44px;
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(
+    to right,
+    #77530a,
+    #ffd277,
+    #77530a,
+    #77530a,
+    #ffd277,
+    #77530a
+  );
+  background-size: 200%;
+  background-position: left;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background-position 1s;
+  overflow: hidden;
+  color: #ffd277;
+  font-family: 'Arima', sans-serif; /* ✅ Added Arima font */
+  font-weight: 600; /* optional, for better bold look */
+  letter-spacing: 0.5px; /* optional, for cleaner text spacing */
+}
+
         /* use data-label to control the inner text */
         .wpforms-submit::before {
           position: absolute;

@@ -235,12 +235,12 @@ const FAQSection = () => {
   };
 
   // Load Arima font
-  if (typeof document !== 'undefined' && !document.querySelector('link[href*="Arima"]')) {
-    const linkTag = document.createElement('link');
-    linkTag.href = 'https://fonts.googleapis.com/css2?family=Arima:wght@100;200;300;400;500;600;700&display=swap';
-    linkTag.rel = 'stylesheet';
-    document.head.appendChild(linkTag);
-  }
+//   if (typeof document !== 'undefined' && !document.querySelector('link[href*="Arima"]')) {
+//     const linkTag = document.createElement('link');
+//     linkTag.href = 'https://fonts.googleapis.com/css2?family=Arima:wght@100;200;300;400;500;600;700&display=swap';
+//     linkTag.rel = 'stylesheet';
+//     document.head.appendChild(linkTag);
+//   }
 
   const renderPlusMinus = (isOpen: boolean) => {
     return (
@@ -287,7 +287,7 @@ const FAQSection = () => {
       minHeight: '100vh',
       position: 'relative',
       overflow: 'hidden',
-      fontFamily: "'Arima', cursive",
+     fontFamily: "'Arima', sans-serif",
     }} className="py-40 px-4 sm:px-6 lg:px-8">
       {/* Animated Grid Background */}
       <div style={{
@@ -411,6 +411,7 @@ const FAQSection = () => {
                   color: '#ffd700',
                   fontSize: '22px',
                   fontWeight: '800',
+                   fontFamily: "'Arima', sans-serif",
                   margin: 0,
                   letterSpacing: '0.5px',
                   textTransform: 'uppercase',
@@ -464,6 +465,7 @@ const FAQSection = () => {
                           <span style={{
                             color: isOpen ? '#ffd700' : '#e0e0e0',
                             fontSize: '17px',
+                           fontFamily: "'Arima', sans-serif",
                             fontWeight: '700',
                             textAlign: 'left',
                             transition: 'color 0.3s ease',
@@ -572,6 +574,7 @@ const FAQSection = () => {
             <p style={{
               color: '#101010',
               fontSize: '16px',
+               fontFamily: "'Arima', sans-serif",
               margin: '0 0 16px 0',
               fontWeight: '600',
               letterSpacing: '0.5px',
@@ -587,6 +590,7 @@ const FAQSection = () => {
                 borderRadius: '12px',
                 fontSize: '15px',
                 fontWeight: '900',
+                 fontFamily: "'Arima', sans-serif",
                 cursor: 'pointer',
                 letterSpacing: '1.5px',
                 transition: 'all 0.3s ease',

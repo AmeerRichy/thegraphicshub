@@ -48,7 +48,7 @@ const HomeHero = () => (
       /* ===== Mobile tweaks ===== */
       @media (max-width: 768px) {
         .hero {
-          min-height: 80vh;
+          min-height: 55vh;
         }
         .frame {
           width: 100vw;

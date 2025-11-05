@@ -328,9 +328,11 @@ export default function PraiseSection() {
           letter-spacing: 0.5px;
         }
         .praise-title span {
-          color: #ffd700;
-          font-family: 'Corinthia, Sans-serif';
-          margin-left: 8px;
+           color: #ffd700;
+          font-family: 'Corinthia' , serif;
+       font-size: clamp(3rem, 4vw, 5rem);
+          font-weight: 500;
+          margin-left: 1px;
         }
         .praise-subtitle {
           color: rgba(255, 255, 255, 0.82);

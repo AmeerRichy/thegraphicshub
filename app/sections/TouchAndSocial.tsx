@@ -184,6 +184,7 @@ export default function TouchAndSocial() {
 
         .text {
           opacity: 0;
+          font-family: 'Arima', sans-serif !important;
           color: #ffd277;
           font-size: 1em;
           font-weight: 600;
