@@ -1,10 +1,11 @@
-'use client';
-import Image from 'next/image';
+'use client'
+import Image from 'next/image'
 
-type Props = { artSrc?: string };
+type Props = { artSrc?: string; note?: string }
 
 export default function FaqHeroExact({
   artSrc = '/assets/images/FAQs.webp',
+  note,
 }: Props) {
   return (
     <section className="faq-hero">
@@ -24,15 +25,19 @@ export default function FaqHeroExact({
             height={197}
             priority
             className="art-img"
+            style={{ width: 'var(--imgW)', height: 'auto', objectFit: 'contain' }}
           />
         </div>
+
+        {/* Optional note (kept for parity with T&Cs) */}
+        {note && <p className="note">{note}</p>}
       </div>
 
       <style jsx>{`
-        /* ===== Tunables ===== */
+        /* ===== Tunables (match T&Cs) ===== */
         :root {
-          --hero-min-h: clamp(460px, 80vh, 700px); /* drives vertical centering */
-          --side-pad: 96px;                         /* desktop left/right padding */
+          --hero-min-h: clamp(460px, 80vh, 700px);
+          --side-pad: 96px;
           --gap: 48px;
         }
 
@@ -40,7 +45,7 @@ export default function FaqHeroExact({
           background: #000;
           color: #fff;
           width: 100%;
-          padding-block: 200px 100px; /* match other heroes */
+          padding-block: 150px 100px; /* same vibe as T&Cs */
         }
 
         /* ===== Centered grid canvas ===== */
@@ -50,10 +55,9 @@ export default function FaqHeroExact({
           padding-inline: var(--side-pad);
           min-height: var(--hero-min-h);
 
-          /* Perfect centering */
           display: grid;
           grid-template-columns: 1fr auto; /* title | art */
-          align-items: center;              /* vertical centering */
+          align-items: center;
           justify-content: space-between;
           gap: var(--gap);
         }
@@ -63,8 +67,8 @@ export default function FaqHeroExact({
           margin: 0;
           font-family: 'Arima', serif;
           font-weight: 700;
-          font-size: clamp(2.6rem, 6vw, 4rem);
-          line-height: 1.06;
+          font-size: clamp(2.4rem, 5vw, 4rem);
+          line-height: 1.05;
           letter-spacing: 0.5px;
           color: rgba(255, 255, 255, 0.85);
           text-align: left;
@@ -75,54 +79,77 @@ export default function FaqHeroExact({
           font-family: 'Corinthia', serif;
           font-size: clamp(3rem, 4vw, 5rem);
           font-weight: 500;
-          margin-left: -15px;
+          margin-left: -10px;
           display: inline-block;
         }
 
-        /* ===== Art ===== */
+        /* ===== Art (same mechanism as T&Cs) ===== */
         .art {
+          --imgW: 240px; /* desktop default */
           display: grid;
           place-items: center;
         }
         .art-img {
           display: block;
-          width: 100%;
-          height: auto;
-          max-width: 240px;
-          object-fit: contain;
+        }
+
+        /* ===== Optional note ===== */
+        .note {
+          grid-column: 1 / -1;
+          text-align: center;
+          margin-top: 20px;
+          font-size: 15px;
+          color: rgba(255, 255, 255, 0.72);
         }
 
         /* ===== Wide desktops ===== */
         @media (min-width: 1600px) {
-          :root { --side-pad: 120px; }
+          :root {
+            --side-pad: 120px;
+          }
         }
 
         /* ===== Large tablet ===== */
         @media (max-width: 1200px) {
-          :root { --side-pad: 64px; --gap: 40px; }
-          .art-img { max-width: 210px; }
+          :root {
+            --side-pad: 64px;
+            --gap: 40px;
+          }
+          .art {
+            --imgW: 210px;
+          }
         }
 
-        /* ===== Tablet & below (stacked, perfectly centered) ===== */
+        /* ===== Tablet & below (stacked, centered) ===== */
         @media (max-width: 900px) {
-          :root { --side-pad: 24px; --gap: 28px; }
+          :root {
+            --side-pad: 24px;
+            --gap: 28px;
+          }
           .wrap {
-            grid-template-columns: 1fr;     /* stack */
-            justify-items: center;          /* center horizontally */
+            grid-template-columns: 1fr; /* stack */
+            justify-items: center;
             text-align: center;
-            padding-inline: max(16px, env(safe-area-inset-left)) max(16px, env(safe-area-inset-right));
+            padding-inline: max(16px, env(safe-area-inset-left))
+              max(16px, env(safe-area-inset-right));
           }
           .title {
             text-align: center;
             max-width: 22ch;
           }
-          .highlight { margin-left: -6px; }
-          .art-img { max-width: min(58vw, 220px); }
+          .highlight {
+            margin-left: -6px;
+          }
+          .art {
+            --imgW: 140px;
+          }
         }
 
         /* ===== Phones ===== */
         @media (max-width: 600px) {
-          .faq-hero { padding-block: 120px 80px; }
+          .faq-hero {
+            padding-block: 120px 80px;
+          }
           .title {
             font-size: clamp(2rem, 7vw, 2.6rem);
             line-height: 1.1;
@@ -131,15 +158,21 @@ export default function FaqHeroExact({
             font-size: clamp(2.2rem, 8.2vw, 2.8rem);
             margin-left: -4px;
           }
-          .art-img { max-width: min(64vw, 200px); }
+          .art {
+            --imgW: 110px;
+          }
         }
 
         /* ===== Small phones ===== */
         @media (max-width: 400px) {
-          .faq-hero { padding-block: 110px 70px; }
-          .art-img { max-width: min(70vw, 180px); }
+          .faq-hero {
+            padding-block: 110px 70px;
+          }
+          .art {
+            --imgW: 96px;
+          }
         }
       `}</style>
     </section>
-  );
+  )
 }

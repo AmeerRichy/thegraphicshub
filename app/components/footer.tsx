@@ -324,7 +324,7 @@ export default function Footer() {
     }}
   >
     <img
-      src="/assets/images/logo.png"
+      src="/assets/images/Logo.png"
       alt="Graphics Hub Logo"
       style={{
         width: isMobile ? '160px' : '220px',

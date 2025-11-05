@@ -1,9 +1,20 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ["res.cloudinary.com"], 
+    // 👇 update this part — domains is deprecated, use remotePatterns instead
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+    ],
   },
-};
 
-export default nextConfig;
+  // 👇 add this to fix nodemailer import in app/api route
+  experimental: {
+    serverComponentsExternalPackages: ['nodemailer'],
+  },
+}
+
+export default nextConfig

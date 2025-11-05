@@ -1,17 +1,17 @@
-'use client';
-import Image from 'next/image';
+'use client'
+import Image from 'next/image'
 
 type Props = {
-  artSrc?: string;
-  note?: string; // optional bottom-right note (e.g., "Effective Date: ...")
-};
+  artSrc?: string
+  note?: string // e.g., "Effective Date: December 1st, 2024."
+}
 
 export default function PrivacyPolicyHeroExact({
   artSrc = '/assets/images/Privacy-Policy.webp',
   note,
 }: Props) {
   return (
-    <section className="hero">
+    <section className="privacy-hero">
       <div className="wrap">
         {/* Heading */}
         <h2 className="title">
@@ -23,37 +23,50 @@ export default function PrivacyPolicyHeroExact({
           <Image
             src={artSrc}
             alt="Privacy Policy illustration"
-            width={200}    // ✅ use original image width
-            height={90}    // maintain aspect ratio
+            width={200}
+            height={90}
             priority
             className="art-img"
+            style={{ width: 'var(--imgW)', height: 'auto', objectFit: 'contain' }}
           />
         </div>
 
+        {/* Optional bottom-right note */}
         {note && <p className="note">{note}</p>}
       </div>
 
       <style jsx>{`
-        .hero {
+        /* ===== Tunables (shared system) ===== */
+        :root {
+          --hero-min-h: clamp(460px, 80vh, 700px);
+          --side-pad: 96px;
+          --gap: 48px;
+        }
+
+        .privacy-hero {
           background: #000;
+          color: #fff;
           width: 100%;
-          padding: 150px 0 100px;
+          padding-block: 150px 100px;
         }
 
+        /* ===== Grid canvas ===== */
         .wrap {
-          position: relative;
-          max-width: 1588px;
+          max-width: 1200px;
           margin: 0 auto;
-          height: 600px; /* ✅ balanced height for smaller art */
-          padding: 0 70px;
+          padding-inline: var(--side-pad);
+          min-height: var(--hero-min-h);
+
+          display: grid;
+          grid-template-columns: 1fr auto; /* title | art */
+          align-items: center;
+          justify-content: space-between;
+          gap: var(--gap);
+          position: relative;
         }
 
-        /* Heading */
+        /* ===== Heading ===== */
         .title {
-          position: absolute;
-          top: 50%;
-          left: 200px; /* ✅ slightly closer for smaller art */
-          transform: translateY(-42%);
           margin: 0;
           text-align: left;
           font-family: 'Arima', serif;
@@ -62,83 +75,87 @@ export default function PrivacyPolicyHeroExact({
           line-height: 1.05;
           letter-spacing: 0.5px;
           color: rgba(255, 255, 255, 0.85);
+          max-width: 18ch;
         }
         .highlight {
-     color: #ffd700;
-          font-family: 'Corinthia' , serif; font-size: clamp(3rem, 4vw, 5rem); font-weight: 500; margin-left: 2px;
+          color: #ffd700;
+          font-family: 'Corinthia', serif;
+          font-size: clamp(3rem, 4vw, 5rem);
+          font-weight: 500;
+          margin-left: 2px;
+          display: inline-block;
         }
 
-        /* Right art */
+        /* ===== Art with CSS var width ===== */
         .art {
-          position: absolute;
-          right: 200px;
-          top: 60px;
-          width: 200px;
-          height: 90px;
+          --imgW: 200px; /* desktop default */
+          display: grid;
+          place-items: center;
         }
-        .art-img {
-          width: 100%;
-          height: auto;
-          display: block;
-        }
+        .art-img { display: block; }
 
-        /* Bottom-right note */
+        /* ===== Note sits under art on the right ===== */
         .note {
-          position: absolute;
-          right: 100px;
-          bottom: 20px;
+          grid-column: 2 / -1;
+          justify-self: end;
+          align-self: end;
           margin: 0;
           font-size: 15px;
           color: rgba(255, 255, 255, 0.72);
         }
 
-        /* Responsive */
-        @media (max-width: 1280px) {
+        /* ===== Wide desktops ===== */
+        @media (min-width: 1600px) {
+          :root { --side-pad: 120px; }
+        }
+
+        /* ===== Large tablet ===== */
+        @media (max-width: 1200px) {
+          :root { --side-pad: 64px; --gap: 40px; }
+          .art { --imgW: 180px; }
+          .note { font-size: 14px; }
+        }
+
+        /* ===== Tablet & below (stacked, centered) ===== */
+        @media (max-width: 900px) {
+          :root { --side-pad: 24px; --gap: 28px; }
           .wrap {
-            height: 480px;
-            padding: 0 48px;
+            grid-template-columns: 1fr; /* stack */
+            justify-items: center;
+            text-align: center;
+            padding-inline: max(16px, env(safe-area-inset-left))
+                            max(16px, env(safe-area-inset-right));
           }
-          .title {
-            left: 100px;
-            transform: translateY(-38%);
-          }
-          .art {
-            right: 60px;
-            top: 40px;
-            width: 160px;
-            height: 72px;
-          }
+          .title { text-align: center; max-width: 22ch; }
+          .highlight { margin-left: -4px; }
+          .art { --imgW: 150px; }
+
+          /* Note remains “bottom-right” conceptually */
           .note {
-            right: 60px;
-            bottom: 16px;
-            font-size: 14px;
+            grid-column: 1 / -1;
+            justify-self: end; /* right-align within single column */
+            margin-top: 24px;
           }
         }
 
-        @media (max-width: 768px) {
-          .wrap {
-            height: 360px;
-            padding: 0 24px;
-          }
+        /* ===== Phones ===== */
+        @media (max-width: 600px) {
+          .privacy-hero { padding-block: 120px 80px; }
           .title {
-            left: 24px;
-            transform: translateY(-36%);
-            font-size: clamp(1.9rem, 6.5vw, 2.6rem);
+            font-size: clamp(2rem, 7vw, 2.6rem);
+            line-height: 1.1;
           }
-          .art {
-            right: 24px;
-            width: 140px;
-            height: 63px;
-            top: auto;
-            bottom: 72px;
-          }
-          .note {
-            right: 24px;
-            bottom: 16px;
-            font-size: 13px;
-          }
+          .highlight { font-size: clamp(2.2rem, 8.2vw, 2.8rem); }
+          .art { --imgW: 120px; }
+          .note { font-size: 13px; }
+        }
+
+        /* ===== Small phones ===== */
+        @media (max-width: 400px) {
+          .privacy-hero { padding-block: 110px 70px; }
+          .art { --imgW: 104px; }
         }
       `}</style>
     </section>
-  );
+  )
 }
