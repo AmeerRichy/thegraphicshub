@@ -84,20 +84,44 @@ export default function WondersSection() {
       </div>
 
       <style jsx>{`
-        .wonders {
-          position: relative;
-          width: 100%;
-          overflow: hidden;
-          background-color: #000;
-          color: #fff;
-          text-align: center;
-          padding: 160px 5% 200px;
-          background-image: url('/cards-bg.png');
-          background-size: 180px;
-          background-repeat: repeat;
-          background-position: center;
-          box-sizing: border-box;
-        }
+       .wonders {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  background-color: #000;
+  color: #fff;
+  text-align: center;
+  padding: 100px 5% 300px;
+  background-image: url('/assets/images/cardsbg.png');
+  background-size: 900px;
+  background-repeat: repeat;
+  background-position: center;
+  margin-bottom: 100px;
+  box-sizing: border-box;
+}
+
+/* TOP + BOTTOM BLACK FADES */
+.wonders::before,
+.wonders::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 120px;        /* adjust fade height */
+  pointer-events: none;
+  z-index: 2;
+}
+
+.wonders::before {
+  top: 0;
+  background: linear-gradient(to bottom, rgba(0,0,0,1), rgba(0,0,0,0));
+}
+
+.wonders::after {
+  bottom: 0;
+  background: linear-gradient(to top, rgba(0,0,0,1), rgba(0,0,0,0));
+}
+
 
         .title {
           font-size: 3rem;

@@ -49,7 +49,7 @@ export default function Abouthero() {
 
       <style jsx>{`
         .about-hero {
-          background-image: url('/assets/images/cardsbg.png');
+          // background-image: url('/assets/images/cardsbg.png');
           background-size: 1000px auto; /* zoom in your pattern */
           background-repeat: repeat;
           background-position: top left;
