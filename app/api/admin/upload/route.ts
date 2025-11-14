@@ -75,12 +75,20 @@ export async function POST(req: Request) {
         const { public_id, secure_url, width, height } = uploaded
 
         // Smaller, optimized variant for UI (grid/listing)
-        const thumbUrl = cloudinary.url(public_id, {
-          width: 800,
-          quality: 'auto:good',
-          crop: 'limit',
-          fetch_format: 'auto',
-        })
+        // const thumbUrl = cloudinary.url(public_id, {
+        //   width: 800,
+        //   quality: 'auto:good',
+        //   crop: 'limit',
+        //   fetch_format: 'auto',
+        // })
+const thumbUrl = cloudinary.url(public_id, {
+  width: 250,
+  height: 250,
+  crop: "fill",
+  gravity: "auto",
+  fetch_format: "auto",
+  quality: "auto:low",
+});
 
         const doc = await ImageModel.create({
           category,

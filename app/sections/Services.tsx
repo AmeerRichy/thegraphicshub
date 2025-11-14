@@ -20,8 +20,6 @@ type Img = {
 export default function ServicesPage() {
   const [cat, setCat] = useState<CategoryLabel>(CATEGORY_LABELS[0])
   const [items, setItems] = useState<Img[]>([])
-  const [page, setPage] = useState(1)
-  const [pages, setPages] = useState(1)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [fade, setFade] = useState(false)
@@ -66,25 +64,24 @@ export default function ServicesPage() {
     rail.scrollBy({ left: delta, behavior: 'smooth' })
   }
 
-  const load = async (reset = false) => {
-    if (loading) return
+  const load = async () => {
     setLoading(true)
     setError(null)
-    const p = reset ? 1 : page
+
     const controller = new AbortController()
     abortRef.current?.abort()
     abortRef.current = controller
+
     try {
       const res = await fetch(
-        `/api/images?cat=${encodeURIComponent(code)}&page=${p}&limit=24`,
+        `/api/images?cat=${encodeURIComponent(code)}&page=1&limit=9999`,
         { cache: 'no-store', signal: controller.signal }
       )
       const json = await res.json()
-      if (!res.ok) setError(json?.error || 'Failed to load images')
-      else {
-        setPages(json.pages || 1)
-        setItems(prev => (reset ? json.items : [...prev, ...json.items]))
-        setPage(p)
+      if (!res.ok) {
+        setError(json?.error || 'Failed to load images')
+      } else {
+        setItems(json.items || [])
       }
     } catch (e: any) {
       if (e?.name !== 'AbortError') setError(e?.message || 'Network error')
@@ -96,7 +93,7 @@ export default function ServicesPage() {
   useEffect(() => {
     setFade(true)
     const t = setTimeout(() => {
-      load(true).finally(() => {
+      load().finally(() => {
         setFade(false)
         centerActive()
         updateArrows()
@@ -179,7 +176,11 @@ export default function ServicesPage() {
 
       {/* Category Slider */}
       <div className="catWrap">
-        <button ref={btnLeftRef} className="arrow left" onClick={() => scrollByAmount('left')}>
+        <button
+          ref={btnLeftRef}
+          className="arrow left"
+          onClick={() => scrollByAmount('left')}
+        >
           ‹
         </button>
 
@@ -188,7 +189,9 @@ export default function ServicesPage() {
             {CATEGORY_LABELS.map((c, i) => (
               <button
                 key={c}
-                ref={(el) => { itemRefs.current[i] = el }}
+                ref={el => {
+                  itemRefs.current[i] = el
+                }}
                 className={`tab ${c === cat ? 'active' : ''}`}
                 onClick={() => setCat(c)}
               >
@@ -213,7 +216,11 @@ export default function ServicesPage() {
           </div>
         </div>
 
-        <button ref={btnRightRef} className="arrow right" onClick={() => scrollByAmount('right')}>
+        <button
+          ref={btnRightRef}
+          className="arrow right"
+          onClick={() => scrollByAmount('right')}
+        >
           ›
         </button>
       </div>
@@ -221,7 +228,7 @@ export default function ServicesPage() {
       {error && <p className="err">{error}</p>}
 
       <div className={`masonry ${fade ? 'fade-out' : 'fade-in'}`}>
-        {items.map((i) => (
+        {items.map(i => (
           <div
             key={i._id}
             className="card"
@@ -235,28 +242,19 @@ export default function ServicesPage() {
               height={i.height || 600}
               sizes="(max-width:900px) 50vw, 33vw"
               loading="lazy"
+              placeholder="blur"
+              blurDataURL={`${i.thumbUrl}?q=1&blur=200`}
             />
           </div>
         ))}
       </div>
 
-      {page < pages && (
-        <button
-          className="loadMore"
-          onClick={() => {
-            setPage((p) => p + 1)
-            queueMicrotask(() => load(false))
-          }}
-          disabled={loading}
-        >
-          {loading ? 'Loading…' : 'Load more'}
-        </button>
-      )}
-
       {popup && (
         <div className="popup" onClick={() => setPopup(null)}>
-          <div className="popup-inner" onClick={(e) => e.stopPropagation()}>
-            <button className="close" onClick={() => setPopup(null)}>×</button>
+          <div className="popup-inner" onClick={e => e.stopPropagation()}>
+            <button className="close" onClick={() => setPopup(null)}>
+              ×
+            </button>
             <Image
               src={popup.url}
               alt={popup.alt || ''}
@@ -264,6 +262,7 @@ export default function ServicesPage() {
               height={popup.height || 800}
               sizes="90vw"
               className="popup-img"
+              style={{ maxWidth: '90vw', maxHeight: '85vh', objectFit: 'contain' }}
             />
           </div>
         </div>
@@ -289,11 +288,19 @@ export default function ServicesPage() {
 
         .title span {
           color: #ffd700;
-          font-family: 'Corinthia' , serif; font-size: clamp(3rem, 4vw, 5rem); font-weight: 500; margin-left: -15px;
+          font-family: 'Corinthia', serif;
+          font-size: clamp(3rem, 4vw, 5rem);
+          font-weight: 500;
+          margin-left: -15px;
         }
 
         /* rest stays identical */
-        .catWrap { position:relative; max-width:1200px; margin:6px auto 20px; height:44px; }
+        .catWrap {
+          position: relative;
+          max-width: 1200px;
+          margin: 6px auto 20px;
+          height: 44px;
+        }
         .rail {
           position: relative;
           overflow-x: auto;
@@ -304,11 +311,27 @@ export default function ServicesPage() {
           cursor: grab;
           user-select: none;
           padding: 0 50px;
-          mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
-          -webkit-mask-image: linear-gradient(to right, transparent 0, #000 40px, #000 calc(100% - 40px), transparent 100%);
+          mask-image: linear-gradient(
+            to right,
+            transparent 0,
+            #000 40px,
+            #000 calc(100% - 40px),
+            transparent 100%
+          );
+          -webkit-mask-image: linear-gradient(
+            to right,
+            transparent 0,
+            #000 40px,
+            #000 calc(100% - 40px),
+            transparent 100%
+          );
         }
-        .rail::-webkit-scrollbar { display:none; }
-        .rail.dragging { cursor:grabbing; }
+        .rail::-webkit-scrollbar {
+          display: none;
+        }
+        .rail.dragging {
+          cursor: grabbing;
+        }
         .track {
           position: relative;
           display: flex;
@@ -326,17 +349,22 @@ export default function ServicesPage() {
           cursor: pointer;
           font-family: 'Arima', serif;
           padding: 6px 2px;
-          transition: color .25s ease, transform .25s ease;
+          transition: color 0.25s ease, transform 0.25s ease;
         }
-        .tab:hover { color:#fff; transform:translateY(-1px); }
-        .tab.active { color:#ffda6b; }
+        .tab:hover {
+          color: #fff;
+          transform: translateY(-1px);
+        }
+        .tab.active {
+          color: #ffda6b;
+        }
         .underline {
           position: absolute;
           height: 2px;
           background: #ffda6b;
           bottom: 0;
           left: 0;
-          transition: transform .35s ease, width .35s ease;
+          transition: transform 0.35s ease, width 0.35s ease;
           will-change: transform, width;
         }
 
@@ -345,42 +373,143 @@ export default function ServicesPage() {
           top: 0;
           bottom: 0;
           width: 38px;
-            font-family: 'Arima', serif;
+          font-family: 'Arima', serif;
           display: flex;
           align-items: center;
           justify-content: center;
-          background: rgba(0,0,0,0.75);
+          background: rgba(0, 0, 0, 0.75);
           color: #e9c572;
           border: 1px solid #e9c57240;
           border-radius: 10px;
           z-index: 5;
           cursor: pointer;
-          transition: background .2s ease, opacity .2s ease;
+          transition: background 0.2s ease, opacity 0.2s ease;
         }
-        .arrow:hover { background:#111; }
-        .arrow:disabled { opacity:.35; cursor:not-allowed; }
-        .arrow.left { left:0; }
-        .arrow.right { right:0; }
+        .arrow:hover {
+          background: #111;
+        }
+        .arrow:disabled {
+          opacity: 0.35;
+          cursor: not-allowed;
+        }
+        .arrow.left {
+          left: 0;
+        }
+        .arrow.right {
+          right: 0;
+        }
 
-        .masonry { column-count:1; column-gap:14px; max-width:1200px; margin:0 auto; opacity:1; transition:opacity .4s ease; }
-        @media (min-width:700px){ .masonry{ column-count:2; } }
-        @media (min-width:1100px){ .masonry{ column-count:3; } }
-        .fade-out{ opacity:0; }
-        .fade-in{ opacity:1; }
-        .card{ break-inside:avoid; display:block; margin:0 0 14px; border-radius:10px; overflow:hidden; cursor:pointer; transition:transform .25s ease; }
-        .card:hover{ transform:scale(1.02); }
-        .card :global(img){ width:100%; height:auto; display:block; background:#111; border-radius:10px; }
+        .masonry {
+          column-count: 1;
+          column-gap: 14px;
+          max-width: 1200px;
+          margin: 0 auto;
+          opacity: 1;
+          transition: opacity 0.4s ease;
+        }
+        @media (min-width: 700px) {
+          .masonry {
+            column-count: 2;
+          }
+        }
+        @media (min-width: 1100px) {
+          .masonry {
+            column-count: 3;
+          }
+        }
+        .fade-out {
+          opacity: 0;
+        }
+        .fade-in {
+          opacity: 1;
+        }
+        .card {
+          break-inside: avoid;
+          display: block;
+          margin: 0 0 14px;
+          border-radius: 10px;
+          overflow: hidden;
+          cursor: pointer;
+          transition: transform 0.25s ease;
+        }
+        .card:hover {
+          transform: scale(1.02);
+        }
+        .card :global(img) {
+          width: 100%;
+          height: auto;
+          display: block;
+          background: #111;
+          border-radius: 10px;
+        }
 
-        .popup{ position:fixed; inset:0; background:rgba(0,0,0,0.8); display:flex; align-items:center; justify-content:center; z-index:1000; animation:fadeIn .3s ease forwards; }
-        .popup-inner{ position:relative; max-width:90vw; max-height:85vh; display:flex; justify-content:center; align-items:center; }
-        .popup-img{ width:auto; height:auto; max-width:90vw; max-height:85vh; border-radius:10px; }
-        .close{ position:absolute; top:-36px; right:-36px; font-size:36px; color:#ffda6b; background:none; border:none; cursor:pointer; transition:transform .2s ease; }
-        .close:hover{ transform:scale(1.2); }
-        @keyframes fadeIn{ from{opacity:0;} to{opacity:1;} }
+        .popup {
+          position: fixed;
+          inset: 0;
+          background: rgba(0, 0, 0, 0.8);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          z-index: 1000;
+          animation: fadeIn 0.3s ease forwards;
+        }
+        .popup-inner {
+          position: relative;
+          max-width: 90vw;
+          max-height: 85vh;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .popup-img {
+          width: auto;
+          height: auto;
+          max-width: 90vw;
+          max-height: 85vh;
+          border-radius: 10px;
+        }
+        .close {
+          position: absolute;
+          top: -36px;
+          right: -36px;
+          font-size: 36px;
+          color: #ffda6b;
+          background: none;
+          border: none;
+          cursor: pointer;
+          transition: transform 0.2s ease;
+        }
+        .close:hover {
+          transform: scale(1.2);
+        }
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
 
-        .loadMore{ display:block; margin:20px auto 40px; padding:10px 18px; border-radius:10px; border:1px solid #e9c57280; color:#e9c572; background:#111; cursor:pointer; transition:all .3s ease; }
-        .loadMore:hover{ background:#1a1a1a; border-color:#e9c572; }
-        .loadMore[disabled]{ opacity:.7; cursor:not-allowed; }
+        .loadMore {
+          display: block;
+          margin: 20px auto 40px;
+          padding: 10px 18px;
+          border-radius: 10px;
+          border: 1px solid #e9c57280;
+          color: #e9c572;
+          background: #111;
+          cursor: pointer;
+          transition: all 0.3s ease;
+        }
+        .loadMore:hover {
+          background: #1a1a1a;
+          border-color: #e9c572;
+        }
+        .loadMore[disabled] {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
       `}</style>
     </section>
   )
