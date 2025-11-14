@@ -7,6 +7,7 @@ import { isValidCategoryCode } from '@/app/libs/categories'
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
+export const maxDuration = 60
 
 // GET /api/admin/images?cat=&limit=&page=
 export async function GET(req: Request) {
@@ -21,13 +22,20 @@ export async function GET(req: Request) {
     const query: any = {}
     if (rawCat) {
       if (!isValidCategoryCode(rawCat)) {
-        return NextResponse.json({ ok: false, error: 'Invalid category' }, { status: 400 })
+        return NextResponse.json(
+          { ok: false, error: 'Invalid category' },
+          { status: 400 }
+        )
       }
       query.category = rawCat
     }
 
     const [items, total] = await Promise.all([
-      ImageModel.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      ImageModel.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
       ImageModel.countDocuments(query),
     ])
 
@@ -40,7 +48,10 @@ export async function GET(req: Request) {
     })
   } catch (err: any) {
     console.error('Admin GET error:', err)
-    return NextResponse.json({ ok: false, error: err.message }, { status: 500 })
+    return NextResponse.json(
+      { ok: false, error: err.message },
+      { status: 500 }
+    )
   }
 }
 
@@ -49,17 +60,78 @@ export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
     const id = searchParams.get('id')
-    if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
+    if (!id) {
+      return NextResponse.json({ error: 'Missing id' }, { status: 400 })
+    }
 
     await dbConnect()
     const doc = await ImageModel.findById(id)
-    if (!doc) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    if (!doc) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
 
-    try { await cloudinary.uploader.destroy(doc.publicId) } catch (e) { console.warn('Cloudinary delete failed', e) }
+    try {
+      // if cloudinary publicId is present
+      // @ts-ignore
+      if (doc.publicId) {
+        // @ts-ignore
+        await cloudinary.uploader.destroy(doc.publicId)
+      }
+    } catch (e) {
+      console.warn('Cloudinary delete failed', e)
+    }
+
     await doc.deleteOne()
     return NextResponse.json({ ok: true, deleted: id })
   } catch (err: any) {
     console.error('Admin DELETE error:', err)
-    return NextResponse.json({ ok: false, error: err.message }, { status: 500 })
+    return NextResponse.json(
+      { ok: false, error: err.message },
+      { status: 500 }
+    )
+  }
+}
+
+// PATCH /api/admin/images  { ids: string[], category: string }
+export async function PATCH(req: Request) {
+  try {
+    const body = await req.json()
+    const { ids, category } = body as {
+      ids?: string[]
+      category?: string
+    }
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return NextResponse.json(
+        { ok: false, error: 'ids[] required' },
+        { status: 400 }
+      )
+    }
+
+    if (!category || !isValidCategoryCode(category)) {
+      return NextResponse.json(
+        { ok: false, error: 'Invalid category' },
+        { status: 400 }
+      )
+    }
+
+    await dbConnect()
+
+    const result: any = await ImageModel.updateMany(
+      { _id: { $in: ids } },
+      { $set: { category } }
+    )
+
+    return NextResponse.json({
+      ok: true,
+      matched: result.matchedCount ?? result.n,
+      modified: result.modifiedCount ?? result.nModified,
+    })
+  } catch (err: any) {
+    console.error('Admin PATCH error:', err)
+    return NextResponse.json(
+      { ok: false, error: err.message || 'Bulk update failed' },
+      { status: 500 }
+    )
   }
 }
