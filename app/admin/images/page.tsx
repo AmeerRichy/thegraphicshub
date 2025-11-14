@@ -1,13 +1,16 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import {
   CATEGORY_CODES,
   CODE_TO_LABEL,
   type CategoryCode,
 } from '@/app/libs/categories'
 
+// -------------------------------
+// TYPES
+// -------------------------------
 type Img = {
   _id: string
   category: CategoryCode
@@ -22,20 +25,28 @@ type Img = {
 const ALL = 'ALL' as const
 type CatFilter = typeof ALL | CategoryCode
 
+// -------------------------------
+// COMPONENT
+// -------------------------------
 export default function AdminImagesPage() {
   const [cat, setCat] = useState<CatFilter>(ALL)
   const [page, setPage] = useState(1)
-  const [limit] = useState(24)
+  const [limit, setLimit] = useState(24)
   const [items, setItems] = useState<Img[]>([])
   const [total, setTotal] = useState(0)
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [loading, setLoading] = useState(false)
+  const [search, setSearch] = useState('')
   const [bulkCat, setBulkCat] = useState<CategoryCode | ''>('')
+  const [preview, setPreview] = useState<Img | null>(null)
 
-  const pages = useMemo(() => Math.ceil(total / limit), [total, limit])
   const qCat = cat === ALL ? '' : cat
+  const pages = useMemo(() => Math.ceil(total / limit), [total, limit])
 
-  const load = async () => {
+  // -------------------------------
+  // LOAD FUNCTION (useCallback FIX)
+  // -------------------------------
+  const load = useCallback(async () => {
     try {
       setLoading(true)
       const res = await fetch(
@@ -43,580 +54,439 @@ export default function AdminImagesPage() {
         { cache: 'no-store' }
       )
       const json = await res.json()
+
       if (res.ok) {
         setItems(json.items)
         setTotal(json.total)
-        setSelected(new Set()) // reset selection on new load
+        setSelected(new Set())
       } else {
         alert(json.error || 'Failed to load images')
       }
-    } catch (e) {
-      console.error(e)
-      alert('Network error while loading images')
+    } catch {
+      alert('Network error')
     } finally {
       setLoading(false)
     }
-  }
+  }, [qCat, page, limit])
 
+  // -------------------------------
+  // EFFECTS
+  // -------------------------------
   useEffect(() => {
     setPage(1)
-  }, [cat])
+  }, [cat, limit])
 
   useEffect(() => {
     load()
-  }, [cat, page])
+  }, [load])
 
-  const delOne = async (id: string) => {
-    if (!confirm('Delete this image?')) return
-    const res = await fetch(`/api/admin/images?id=${id}`, { method: 'DELETE' })
-    const json = await res.json()
-    if (!res.ok) return alert(json.error || 'Delete failed')
-    setItems(prev => prev.filter(i => i._id !== id))
-    setTotal(t => t - 1)
-    setSelected(s => {
-      s.delete(id)
-      return new Set(s)
-    })
-  }
+  // -------------------------------
+  // FILTER
+  // -------------------------------
+  const filteredItems = useMemo(() => {
+    if (!search.trim()) return items
+    const s = search.toLowerCase()
 
-  const delSelected = async () => {
-    if (selected.size === 0) return
-    if (!confirm(`Delete ${selected.size} image(s)?`)) return
-    const ids = Array.from(selected)
+    return items.filter(i =>
+      [i.alt, i._id, CODE_TO_LABEL[i.category]]
+        .filter(Boolean)
+        .some(str => str!.toLowerCase().includes(s))
+    )
+  }, [items, search])
 
-    for (const id of ids) {
-      try {
-        await fetch(`/api/admin/images?id=${id}`, { method: 'DELETE' })
-      } catch (e) {
-        console.error('Failed to delete', id, e)
-      }
-    }
-
-    setItems(prev => prev.filter(i => !selected.has(i._id)))
-    setTotal(t => Math.max(0, t - selected.size))
-    setSelected(new Set())
-  }
-
-  const bulkUpdateCategory = async () => {
-    if (selected.size === 0) return
-    if (!bulkCat) return alert('Please choose a category first.')
-
-    if (
-      !confirm(
-        `Change category of ${selected.size} image(s) to "${
-          CODE_TO_LABEL[bulkCat] || bulkCat
-        }"?`
-      )
-    ) {
-      return
-    }
-
-    const ids = Array.from(selected)
-
-    try {
-      const res = await fetch('/api/admin/images', {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ids, category: bulkCat }),
-      })
-      const json = await res.json()
-      if (!res.ok || !json.ok) {
-        return alert(json.error || 'Bulk category update failed')
-      }
-
-      // optimistic UI update
-      setItems(prev =>
-        prev.map(i =>
-          selected.has(i._id) ? { ...i, category: bulkCat } : i
-        )
-      )
-      setSelected(new Set())
-    } catch (e) {
-      console.error(e)
-      alert('Network error while updating categories')
-    }
-  }
-
+  // -------------------------------
+  // UTILS
+  // -------------------------------
   const toggle = (id: string) =>
-    setSelected(s => {
-      const next = new Set(s)
+    setSelected(prev => {
+      const next = new Set(prev)
       next.has(id) ? next.delete(id) : next.add(id)
       return next
     })
 
-  const allIds = items.map(i => i._id)
-  const allOnPageSelected =
-    allIds.length > 0 && allIds.every(id => selected.has(id))
+  const allIds = filteredItems.map(i => i._id)
+  const allOnPageSelected = allIds.every(id => selected.has(id))
+
   const toggleAllOnPage = () =>
-    setSelected(s => {
-      const next = new Set(s)
-      if (allOnPageSelected) {
-        allIds.forEach(id => next.delete(id))
-      } else {
-        allIds.forEach(id => next.add(id))
-      }
+    setSelected(prev => {
+      const next = new Set(prev)
+      if (allOnPageSelected) allIds.forEach(id => next.delete(id))
+      else allIds.forEach(id => next.add(id))
       return next
     })
 
-  const showingFrom = total === 0 ? 0 : (page - 1) * limit + 1
-  const showingTo = showingFrom + items.length - 1
+  // -------------------------------
+  // CRUD ACTIONS
+  // -------------------------------
+  const delOne = async (id: string) => {
+    if (!confirm('Delete image?')) return
+    const res = await fetch(`/api/admin/images?id=${id}`, { method: 'DELETE' })
+    const json = await res.json()
 
+    if (!res.ok) return alert(json.error)
+    setItems(prev => prev.filter(i => i._id !== id))
+    setTotal(t => t - 1)
+  }
+
+  const delSelected = async () => {
+    if (selected.size === 0) return
+    if (!confirm(`Delete ${selected.size} items?`)) return
+
+    for (const id of selected) {
+      await fetch(`/api/admin/images?id=${id}`, { method: 'DELETE' })
+    }
+
+    setItems(prev => prev.filter(i => !selected.has(i._id)))
+    setTotal(t => t - selected.size)
+    setSelected(new Set())
+  }
+
+  const bulkUpdateCategory = async () => {
+    if (!bulkCat) return alert('Choose category')
+
+    const ids = Array.from(selected)
+    const res = await fetch('/api/admin/images', {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ ids, category: bulkCat }),
+    })
+
+    const json = await res.json()
+    if (!res.ok) return alert(json.error)
+
+    setItems(prev =>
+      prev.map(i =>
+        selected.has(i._id) ? { ...i, category: bulkCat } : i
+      )
+    )
+
+    setSelected(new Set())
+  }
+
+  // -------------------------------
+  // JSX
+  // -------------------------------
   return (
     <main className="wrap">
-      <header className="bar">
-        <div className="bar-left">
-          <h1>Admin — Images</h1>
-          <p className="subtitle">
-            Showing {items.length ? `${showingFrom}–${showingTo}` : 0} of {total}{' '}
-            {cat === ALL ? 'images' : `in “${cat}”`}
-          </p>
-        </div>
+      {/* ---------- TOP BAR ---------- */}
+      <header className="topbar">
+        <h1>🖼️ Admin Images</h1>
 
-        <div className="filters">
-          <label className="filter-label">
-            Category
-            <select
-              value={cat}
-              onChange={e => setCat(e.target.value as CatFilter)}
-            >
-              <option value={ALL}>{ALL}</option>
-              {CATEGORY_CODES.map(c => (
-                <option key={c} value={c}>
-                  {CODE_TO_LABEL[c] || c}
-                </option>
-              ))}
-            </select>
-          </label>
+        <input
+          className="search"
+          placeholder="Search images…"
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+        />
 
-          <div className="pages">
-            <button
-              disabled={page <= 1 || loading}
-              onClick={() => setPage(p => p - 1)}
-            >
-              ‹ Prev
-            </button>
-            <span className="page-indicator">
-              Page {page} / {Math.max(1, pages || 1)}
-            </span>
-            <button
-              disabled={page >= pages || loading}
-              onClick={() => setPage(p => p + 1)}
-            >
-              Next ›
-            </button>
-          </div>
+        <select value={cat} onChange={e => setCat(e.target.value as CatFilter)}>
+          <option value={ALL}>All Categories</option>
+          {CATEGORY_CODES.map(c => (
+            <option key={c} value={c}>
+              {CODE_TO_LABEL[c]}
+            </option>
+          ))}
+        </select>
+
+        <select value={limit} onChange={e => setLimit(Number(e.target.value))}>
+          <option value={24}>24 / page</option>
+          <option value={48}>48 / page</option>
+          <option value={96}>96 / page</option>
+        </select>
+
+        <div className="pagination">
+          <button disabled={page <= 1} onClick={() => setPage(p => p - 1)}>
+            ←
+          </button>
+          <span>
+            {page}/{pages}
+          </span>
+          <button disabled={page >= pages} onClick={() => setPage(p => p + 1)}>
+            →
+          </button>
         </div>
       </header>
 
-      <div className="bulkBar">
+      {/* ---------- BULK ACTION BAR ---------- */}
+      <div className="bulkbar">
         <label className="chk">
-          <input
-            type="checkbox"
-            checked={allOnPageSelected}
-            onChange={toggleAllOnPage}
-          />
-          <span>
-            Select all on page{' '}
-            {items.length > 0 && `(${selected.size}/${items.length} selected)`}
-          </span>
+          <input type="checkbox" checked={allOnPageSelected} onChange={toggleAllOnPage} />
+          Select all ({selected.size} selected)
         </label>
 
         <div className="bulk-actions">
-          <div className="bulk-cat">
-            <span className="bulk-label">Change category to:</span>
-            <select
-              value={bulkCat}
-              onChange={e => setBulkCat(e.target.value as CategoryCode | '')}
-            >
-              <option value="">Select…</option>
-              {CATEGORY_CODES.map(c => (
-                <option key={c} value={c}>
-                  {CODE_TO_LABEL[c] || c}
-                </option>
-              ))}
-            </select>
-            <button
-              onClick={bulkUpdateCategory}
-              disabled={selected.size === 0 || !bulkCat}
-              className="secondary"
-              title="Update category for selected"
-            >
-              Apply to selected
-            </button>
-          </div>
+          <select value={bulkCat} onChange={e => setBulkCat(e.target.value as CategoryCode)}>
+            <option value="">Change category…</option>
+            {CATEGORY_CODES.map(c => (
+              <option key={c} value={c}>
+                {CODE_TO_LABEL[c]}
+              </option>
+            ))}
+          </select>
 
-          <button
-            onClick={delSelected}
-            disabled={selected.size === 0}
-            className="danger"
-            title="Delete selected"
-          >
-            Delete selected ({selected.size})
+          <button disabled={!bulkCat} onClick={bulkUpdateCategory}>
+            Apply
+          </button>
+
+          <button className="danger" onClick={delSelected}>
+            Delete Selected
           </button>
         </div>
       </div>
 
+      {/* ---------- GRID ---------- */}
       <section className="grid">
-        {loading && (
-          <div className="loading">
-            <span className="spinner" />
-            <span>Loading images…</span>
-          </div>
-        )}
+        {loading && <p className="loading">Loading…</p>}
 
         {!loading &&
-          items.map(i => {
+          filteredItems.map(i => {
             const isSel = selected.has(i._id)
             return (
               <div
-                className={`card ${isSel ? 'sel' : ''}`}
                 key={i._id}
-                title={i.alt || ''}
+                className={`card ${isSel ? 'sel' : ''}`}
+                onClick={() => toggle(i._id)}
               >
-                <label className="pick">
-                  <input
-                    type="checkbox"
-                    checked={isSel}
-                    onChange={() => toggle(i._id)}
-                  />
-                </label>
-                <div className="thumb">
-                  <Image
-                    src={i.thumbUrl}
-                    alt={i.alt || ''}
-                    fill
-                    sizes="(max-width:800px) 50vw, 25vw"
-                  />
-                </div>
-                <div className="meta">
-                  <div className="meta-left">
-                    <span className="cat">
-                      {CODE_TO_LABEL[i.category] || i.category}
-                    </span>
+                <Image
+                  src={i.thumbUrl}
+                  alt={i.alt || ''}
+                  fill
+                  className="img"
+                  placeholder="blur"
+                  blurDataURL={i.thumbUrl}
+                />
+
+                <div className="overlay">
+                  <div className="info">
+                    <span>{CODE_TO_LABEL[i.category]}</span>
                     <span className="id">#{i._id.slice(-6)}</span>
                   </div>
-                  <button
-                    onClick={() => delOne(i._id)}
-                    className="meta-delete"
-                  >
-                    Delete
-                  </button>
+
+                  <div className="btns">
+                    <button
+                      onClick={e => {
+                        e.stopPropagation()
+                        setPreview(i)
+                      }}
+                    >
+                      Preview
+                    </button>
+
+                    <button
+                      className="danger"
+                      onClick={e => {
+                        e.stopPropagation()
+                        delOne(i._id)
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
                 </div>
               </div>
             )
           })}
-
-        {!loading && items.length === 0 && <p>No images found.</p>}
       </section>
 
-      <style jsx>{`
-        .wrap {
-          max-width: 1100px;
-          margin: 40px auto;
-          padding: 0 16px 40px;
-          color: #f5e2a8;
-          font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI',
-            sans-serif;
-        }
+      {/* ---------- PREVIEW MODAL ---------- */}
+      {preview && (
+        <div className="modal" onClick={() => setPreview(null)}>
+          <div className="modal-content" onClick={e => e.stopPropagation()}>
+            <Image
+              src={preview.url}
+              alt={preview.alt || ''}
+              width={preview.width || 800}
+              height={preview.height || 600}
+              className="modal-img"
+            />
+            <h2>{preview.alt}</h2>
+            <p>Category: {CODE_TO_LABEL[preview.category]}</p>
+            <button onClick={() => setPreview(null)}>Close</button>
+          </div>
+        </div>
+      )}
 
-        .bar {
-          display: flex;
-          align-items: flex-start;
-          justify-content: space-between;
-          margin-bottom: 10px;
-          gap: 16px;
-        }
-
-        .bar-left h1 {
-          font-size: 22px;
-          margin: 0;
-        }
-
-        .subtitle {
-          margin: 4px 0 0;
-          font-size: 13px;
-          opacity: 0.7;
-        }
-
-        .filters {
-          display: flex;
-          gap: 12px;
-          align-items: center;
-          flex-wrap: wrap;
-        }
-
-        .filter-label {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-          font-size: 12px;
-        }
-
-        select {
-          background: #131313;
-          color: #fff;
-          border: 1px solid #3a2b10;
-          border-radius: 8px;
-          padding: 6px 10px;
-          font-size: 13px;
-          outline: none;
-        }
-
-        select:focus {
-          border-color: #e9c572;
-          box-shadow: 0 0 0 1px #e9c57244;
-        }
-
-        .pages {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-        }
-
-        .pages button {
-          background: #1a1a1a;
-          color: #fff;
-          border: 1px solid #3a2b10;
-          padding: 6px 10px;
-          border-radius: 8px;
-          font-size: 13px;
-          cursor: pointer;
-          transition: background 0.15s ease, border-color 0.15s ease,
-            transform 0.1s ease;
-        }
-
-        .pages button:hover:not(:disabled) {
-          background: #262626;
-          border-color: #e9c57255;
-          transform: translateY(-1px);
-        }
-
-        .pages button:disabled {
-          opacity: 0.4;
-          cursor: default;
-        }
-
-        .page-indicator {
-          font-size: 12px;
-          opacity: 0.8;
-        }
-
-        .bulkBar {
-          display: flex;
-          align-items: flex-start;
-          justify-content: space-between;
-          gap: 14px;
-          margin: 16px 0 18px;
-          padding: 10px 12px;
-          border-radius: 10px;
-          background: radial-gradient(circle at top left, #3a2b10 0, #111 55%);
-          border: 1px solid #3a2b10;
-        }
-
-        .chk {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          font-size: 13px;
-        }
-
-        .chk input {
-          width: 14px;
-          height: 14px;
-        }
-
-        .bulk-actions {
-          display: flex;
-          align-items: center;
-          gap: 12px;
-          flex-wrap: wrap;
-          justify-content: flex-end;
-        }
-
-        .bulk-cat {
-          display: flex;
-          align-items: center;
-          gap: 8px;
-          font-size: 13px;
-        }
-
-        .bulk-label {
-          opacity: 0.8;
-        }
-
-        .secondary,
-        .danger {
-          border-radius: 8px;
-          padding: 6px 12px;
-          font-size: 13px;
-          cursor: pointer;
-          border: 1px solid transparent;
-          transition: background 0.15s ease, border-color 0.15s ease,
-            transform 0.1s ease, opacity 0.15s ease;
-        }
-
-        .secondary {
-          background: #222;
-          color: #f5e2a8;
-          border-color: #3a2b10;
-        }
-
-        .secondary:hover:not(:disabled) {
-          background: #2b2b2b;
-          border-color: #e9c57255;
-          transform: translateY(-1px);
-        }
-
-        .danger {
-          background: #3a1010;
-          border-color: #612222;
-          color: #fff;
-        }
-
-        .danger:hover:not(:disabled) {
-          background: #511818;
-          border-color: #9b3434;
-          transform: translateY(-1px);
-        }
-
-        .secondary:disabled,
-        .danger:disabled {
-          opacity: 0.4;
-          cursor: default;
-          transform: none;
-        }
-
-        .grid {
-          position: relative;
-          display: grid;
-          grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-          gap: 14px;
-          min-height: 80px;
-        }
-
-        .card {
-          position: relative;
-          background: radial-gradient(circle at top, #151515, #050505);
-          border: 1px solid #2a2a2a;
-          border-radius: 10px;
-          overflow: hidden;
-          box-shadow: 0 10px 22px rgba(0, 0, 0, 0.3);
-          transition: transform 0.15s ease, box-shadow 0.15s ease,
-            border-color 0.15s ease;
-        }
-
-        .card:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 16px 32px rgba(0, 0, 0, 0.4);
-          border-color: #3a2b10;
-        }
-
-        .card.sel {
-          outline: 2px solid #e9c572;
-          outline-offset: -2px;
-          box-shadow: 0 0 0 1px #e9c57255, 0 16px 32px rgba(0, 0, 0, 0.5);
-        }
-
-        .pick {
-          position: absolute;
-          top: 8px;
-          left: 8px;
-          z-index: 2;
-          background: #0008;
-          padding: 6px;
-          border-radius: 8px;
-          backdrop-filter: blur(6px);
-        }
-
-        .thumb {
-          position: relative;
-          width: 100%;
-          padding-top: 66%;
-          background: #111;
-        }
-
-        .meta {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 8px 10px;
-        }
-
-        .meta-left {
-          display: flex;
-          flex-direction: column;
-          gap: 3px;
-        }
-
-        .cat {
-          font-size: 12px;
-          opacity: 0.9;
-        }
-
-        .id {
-          font-size: 11px;
-          opacity: 0.55;
-        }
-
-        .meta-delete {
-          background: #2a2a2a;
-          color: #fff;
-          border: 0;
-          border-radius: 6px;
-          padding: 5px 10px;
-          font-size: 12px;
-          cursor: pointer;
-          transition: background 0.15s ease, transform 0.1s ease;
-        }
-
-        .meta-delete:hover {
-          background: #3a1010;
-          transform: translateY(-1px);
-        }
-
-        .loading {
-          position: absolute;
-          inset: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 10px;
-          font-size: 14px;
-          color: #f5e2a8;
-          background: radial-gradient(circle at top, #111, #000d);
-          border-radius: 10px;
-        }
-
-        .spinner {
-          width: 16px;
-          height: 16px;
-          border-radius: 999px;
-          border: 2px solid #333;
-          border-top-color: #e9c572;
-          animation: spin 0.8s linear infinite;
-        }
-
-        @keyframes spin {
-          to {
-            transform: rotate(360deg);
+      {/* ---------- STYLES ---------- */}
+      <style jsx>
+        {`
+          * {
+            font-family: 'Inter', sans-serif;
           }
-        }
 
-        @media (max-width: 640px) {
-          .bar {
-            flex-direction: column;
-            align-items: flex-start;
+          .wrap {
+            max-width: 1200px;
+            margin: auto;
+            padding: 20px;
+            color: #fff;
           }
-          .bulkBar {
-            flex-direction: column;
-            align-items: flex-start;
+
+          /* Top Bar */
+          .topbar {
+            display: grid;
+            grid-template-columns: 1fr auto auto auto auto;
+            gap: 12px;
+            margin-bottom: 22px;
+            align-items: center;
           }
-          .bulk-actions {
-            width: 100%;
+
+          .search {
+            background: #111;
+            border: 1px solid #333;
+            padding: 8px 12px;
+            border-radius: 8px;
+            color: white;
+          }
+
+          select {
+            background: #111;
+            border: 1px solid #444;
+            color: white;
+            padding: 7px 10px;
+            border-radius: 8px;
+          }
+
+          .pagination {
+            display: flex;
+            gap: 8px;
+          }
+
+          .pagination button {
+            background: #222;
+            padding: 6px 10px;
+            border-radius: 8px;
+            border: 1px solid #333;
+            cursor: pointer;
+          }
+
+          /* Bulk bar */
+          .bulkbar {
+            display: flex;
             justify-content: space-between;
+            margin-bottom: 20px;
+            background: #111;
+            padding: 12px 14px;
+            border-radius: 10px;
+            border: 1px solid #333;
           }
-        }
-      `}</style>
+
+          .chk {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+          }
+
+          .bulk-actions {
+            display: flex;
+            gap: 10px;
+          }
+
+          button {
+            background: #222;
+            border: 1px solid #444;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+          }
+
+          button:hover {
+            background: #333;
+          }
+
+          .danger {
+            background: #5c1010;
+            border-color: #902020;
+          }
+
+          /* Grid */
+          .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+          }
+
+          .card {
+            position: relative;
+            height: 200px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #111;
+            cursor: pointer;
+            border: 1px solid #222;
+            transition: 0.2s ease;
+          }
+
+          .card:hover {
+            transform: translateY(-4px);
+            border-color: #e9c572;
+          }
+
+          .card.sel {
+            outline: 3px solid #e9c572;
+            outline-offset: -3px;
+          }
+
+          .img {
+            object-fit: cover;
+          }
+
+          .overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(
+              to bottom,
+              transparent 40%,
+              rgba(0, 0, 0, 0.85)
+            );
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 12px;
+            opacity: 0;
+            transition: 0.25s ease;
+          }
+
+          .card:hover .overlay {
+            opacity: 1;
+          }
+
+          .info {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 8px;
+          }
+
+          .btns {
+            display: flex;
+            gap: 6px;
+          }
+
+          /* Modal */
+          .modal {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(6px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+          }
+
+          .modal-content {
+            background: #111;
+            padding: 25px;
+            border-radius: 10px;
+            max-width: 80%;
+            text-align: center;
+          }
+
+          .modal-img {
+            border-radius: 8px;
+            margin-bottom: 20px;
+          }
+        `}
+      </style>
     </main>
   )
 }
