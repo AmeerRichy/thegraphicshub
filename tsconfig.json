@@ -37,7 +37,7 @@
     "**/*.mts",
     ".next\\dev/types/**/*.ts",
     ".next\\dev/types/**/*.ts"
-  ],
+, "scripts/import-thegraphicshub-services.cjs"  ],
   "exclude": [
     "node_modules"
   ]
