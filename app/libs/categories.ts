@@ -6,24 +6,22 @@ export const CATEGORY_LABELS = [
   'Cards',
   'Character Design',
   'Editing',
-  'Interior/Exterior Design',
   'Illustrations',
   'Infographics',
+  'Interior/Exterior Design',
+  'Insta Grid',
+  'Labels/Stickers',
   'Logo Design',
+  'Mockups',
   'Print Media',
   'Product/Packaging Design',
   'Silhouettes',
   'Social Media',
   'Stationary',
-  'UI/UX',
-  'Video',
-
-  // 🔥 Newly added
-  'Mockups',
-  'Vectors Design',
   'Typography',
-  'Labels/Stickers',
-  'Insta Grid',
+  'UI/UX',
+  'Vectors Design',
+  'Video',
 ] as const;
 
 export type CategoryLabel = typeof CATEGORY_LABELS[number];
@@ -37,25 +35,22 @@ export const LABEL_TO_CODE: Record<CategoryLabel, CategoryCode> = {
   'Cards': 'CARDS',
   'Character Design': 'CHARACTER_DESIGN',
   'Editing': 'EDITING',
-  'Interior/Exterior Design': 'INTERIOR_EXTERIOR_DESIGN',
   'Illustrations': 'ILLUSTRATIONS',
   'Infographics': 'INFOGRAPHICS',
+  'Interior/Exterior Design': 'INTERIOR_EXTERIOR_DESIGN',
+  'Insta Grid': 'INSTA_GRID',
+  'Labels/Stickers': 'LABELS_STICKERS',
   'Logo Design': 'LOGO_DESIGN',
+  'Mockups': 'MOCKUPS',
   'Print Media': 'PRINT_MEDIA',
-  // keep existing DB code
   'Product/Packaging Design': 'PRODUCT_PACKAGING',
   'Silhouettes': 'SILHOUETTES',
   'Social Media': 'SOCIAL_MEDIA',
   'Stationary': 'STATIONARY',
-  'UI/UX': 'UI_UX',
-  'Video': 'VIDEO',
-
-  // 🔥 NEW
-  'Mockups': 'MOCKUPS',
-  'Vectors Design': 'VECTORS_DESIGN',
   'Typography': 'TYPOGRAPHY',
-  'Labels/Stickers': 'LABELS_STICKERS',
-  'Insta Grid': 'INSTA_GRID',
+  'UI/UX': 'UI_UX',
+  'Vectors Design': 'VECTORS_DESIGN',
+  'Video': 'VIDEO',
 } as const;
 
 
@@ -77,24 +72,22 @@ export type CategoryCode =
   | 'CARDS'
   | 'CHARACTER_DESIGN'
   | 'EDITING'
-  | 'INTERIOR_EXTERIOR_DESIGN'
   | 'ILLUSTRATIONS'
   | 'INFOGRAPHICS'
+  | 'INTERIOR_EXTERIOR_DESIGN'
+  | 'INSTA_GRID'
+  | 'LABELS_STICKERS'
   | 'LOGO_DESIGN'
+  | 'MOCKUPS'
   | 'PRINT_MEDIA'
   | 'PRODUCT_PACKAGING'
   | 'SILHOUETTES'
   | 'SOCIAL_MEDIA'
   | 'STATIONARY'
-  | 'UI_UX'
-  | 'VIDEO'
-
-  // 🔥 NEW
-  | 'MOCKUPS'
-  | 'VECTORS_DESIGN'
   | 'TYPOGRAPHY'
-  | 'LABELS_STICKERS'
-  | 'INSTA_GRID';
+  | 'UI_UX'
+  | 'VECTORS_DESIGN'
+  | 'VIDEO';
 
 
 // Runtime code validator
