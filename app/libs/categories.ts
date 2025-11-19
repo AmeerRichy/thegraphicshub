@@ -105,28 +105,65 @@ export const CATEGORY_CODES = Object.values(LABEL_TO_CODE) as CategoryCode[];
 // ============================================================
 export const SUBCATEGORIES: Record<CategoryCode, string[]> = {
   AI: ['AI Art', 'AI Enhancements', 'AI Retouch'],
-  ANIMATION: ['Animated Videos','2D Animation', '3D Animation', 'Motion Graphics'],
-  BRANDING: ['Brand Identity', 'Brand Guidelines', 'Strategy'],
-  CARDS: ['Business','Id cards', 'Invitation', 'Greeting','menu cards'],
-  CHARACTER_DESIGN: ['Mascots', 'Cartoon', '3D Characters'],
-  EDITING: ['Photo Editing', 'Video Editing', 'Retouching'],
-  ILLUSTRATIONS: ['Digital Art', 'Vector Art', 'Comic Style'],
-  INFOGRAPHICS: ['Static Infographics', 'Animated Infographics'],
-  INTERIOR_EXTERIOR_DESIGN: ['Interior 3D', 'Exterior 3D', 'Floor Plans'],
+
+  ANIMATION: ['2D Animation', '3D Animation', 'Animated Videos', 'Motion Graphics'],
+
+  BRANDING: ['Brand Guidelines', 'Brand Identity', 'Strategy'],
+
+  CARDS: ['Business', 'Greeting', 'Id cards', 'Invitation', 'menu cards'],
+
+  CHARACTER_DESIGN: ['3D Characters', 'Cartoon', 'Mascots'],
+
+  EDITING: ['Photo Editing', 'Retouching', 'Video Editing'],
+
+  ILLUSTRATIONS: ['Comic Style', 'Digital Art', 'Vector Art'],
+
+  INFOGRAPHICS: ['Animated Infographics', 'Static Infographics'],
+
+  INTERIOR_EXTERIOR_DESIGN: ['Exterior 3D', 'Floor Plans', 'Interior 3D'],
+
   INSTA_GRID: ['3x3 Grid', 'Puzzle Layouts'],
-  LABELS_STICKERS: ['Stickers', 'Bottle Labels', 'Packaging Labels'],
-  LOGO_DESIGN: ['Minimal', 'Mascot', 'Premium and Signature', 'Water Colors', '3D Logo'],
-  MOCKUPS: ['Product Mockups', 'Branding Mockups', 'UI Mockups'],
-  PRINT_MEDIA: ['Calendars','Flyer', 'Brochure','Media wall/Backdrop', 'magazines', 'Poster'],
-  PRODUCT_PACKAGING: ['Box Design', 'Pouch Design', 'Bottle Packaging'],
+
+  LABELS_STICKERS: ['Bottle Labels', 'Packaging Labels', 'Stickers'],
+
+  LOGO_DESIGN: [
+    '3D Logo',
+    'Mascot',
+    'Minimal',
+    'Premium and Signature',
+    'Water Colors',
+  ],
+
+  MOCKUPS: ['Branding Mockups', 'Product Mockups', 'UI Mockups'],
+
+  PRINT_MEDIA: ['Brochure', 'Calendars', 'Flyer', 'Media wall/Backdrop', 'Poster', 'magazines'],
+
+  PRODUCT_PACKAGING: ['Bottle Packaging', 'Box Design', 'Pouch Design'],
+
   SILHOUETTES: [],
-  SOCIAL_MEDIA: ['Posts', 'Stories', 'Carousel', 'Reels'],
-  STATIONARY: ['Letterhead','Merchandise', 'Envelope', 'Business Card'],
-  TYPOGRAPHY: ['English', 'Urdu','Arabic'],
-  UI_UX: ['Web UI', 'Mobile UI', 'Wireframes'],
+
+  SOCIAL_MEDIA: ['Carousel', 'Posts', 'Reels', 'Stories'],
+
+  STATIONARY: ['Business Card', 'Envelope', 'Letterhead', 'Merchandise'],
+
+  TYPOGRAPHY: ['Arabic', 'English', 'Urdu'],
+
+  UI_UX: ['Mobile UI', 'Web UI', 'Wireframes'],
+
   VECTORS_DESIGN: [],
-  VIDEO: ['Talking Heads','Ads','vlogs','Digital Video','Comercial (DVC)','Explainer Videos','Short Form','Corporate'],
+
+  VIDEO: [
+    'Ads',
+    'Comercial (DVC)',
+    'Corporate',
+    'Digital Video',
+    'Explainer Videos',
+    'Short Form',
+    'Talking Heads',
+    'vlogs',
+  ],
 };
+
 
 
 // ============================================================
