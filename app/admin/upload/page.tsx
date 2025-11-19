@@ -147,7 +147,7 @@ export default function AdminUploadPage() {
           <input
             ref={inputRef}
             type="file"
-            accept="image/*"
+           accept="image/*,video/*"
             multiple
             hidden
             onChange={onPick}

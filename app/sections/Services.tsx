@@ -263,16 +263,28 @@ export default function ServicesPage() {
             onClick={() => setPopup(i)}
             aria-label={i.alt || ''}
           >
-            <Image
-              src={i.thumbUrl}
-              alt={i.alt || ''}
-              width={i.width || 800}
-              height={i.height || 600}
-              sizes="(max-width:900px) 50vw, 33vw"
-              loading="lazy"
-              placeholder="blur"
-              blurDataURL={`${i.thumbUrl}?q=1&blur=200`}
-            />
+           {i.url.match(/\.(mp4|mov|webm)$/i) ? (
+  <video
+    src={i.url}
+    muted
+    loop
+    autoPlay
+    playsInline
+    style={{ width: '100%', borderRadius: '10px', display: 'block' }}
+  />
+) : (
+  <Image
+    src={i.thumbUrl}
+    alt={i.alt || ''}
+    width={i.width || 800}
+    height={i.height || 600}
+    sizes="(max-width:900px) 50vw, 33vw"
+    loading="lazy"
+    placeholder="blur"
+    blurDataURL={`${i.thumbUrl}?q=1&blur=200`}
+  />
+)}
+
           </div>
         ))}
       </div>
@@ -283,15 +295,30 @@ export default function ServicesPage() {
             <button className="close" onClick={() => setPopup(null)}>
               ×
             </button>
-            <Image
-              src={popup.url}
-              alt={popup.alt || ''}
-              width={popup.width || 1000}
-              height={popup.height || 800}
-              sizes="90vw"
-              className="popup-img"
-              style={{ maxWidth: '90vw', maxHeight: '85vh', objectFit: 'contain' }}
-            />
+        {popup.url.match(/\.(mp4|mov|webm)$/i) ? (
+  <video
+    src={popup.url}
+    controls
+    autoPlay
+    style={{
+      maxWidth: '90vw',
+      maxHeight: '85vh',
+      borderRadius: '10px',
+      objectFit: 'contain'
+    }}
+  />
+) : (
+  <Image
+    src={popup.url}
+    alt={popup.alt || ''}
+    width={popup.width || 1000}
+    height={popup.height || 800}
+    sizes="90vw"
+    className="popup-img"
+    style={{ maxWidth: '90vw', maxHeight: '85vh', objectFit: 'contain' }}
+  />
+)}
+
           </div>
         </div>
       )}

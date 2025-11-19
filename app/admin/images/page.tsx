@@ -280,14 +280,27 @@ export default function AdminImagesPage() {
                 className={`card ${isSel ? 'sel' : ''}`}
                 onClick={() => toggle(i._id)}
               >
-                <Image
-                  src={i.thumbUrl}
-                  alt={i.alt || ''}
-                  fill
-                  className="img"
-                  placeholder="blur"
-                  blurDataURL={i.thumbUrl}
-                />
+             {i.url.match(/\.(mp4|mov|webm)$/i) ? (
+  <video
+    src={i.url}
+    className="img"
+    muted
+    autoPlay
+    loop
+    playsInline
+    style={{ objectFit: 'cover', width: '100%', height: '100%' }}
+  />
+) : (
+  <Image
+    src={i.thumbUrl}
+    alt={i.alt || ''}
+    fill
+    className="img"
+    placeholder="blur"
+    blurDataURL={i.thumbUrl}
+  />
+)}
+
 
                 <div className="overlay">
                   <div className="info">
@@ -328,13 +341,24 @@ export default function AdminImagesPage() {
       {preview && (
         <div className="modal" onClick={() => setPreview(null)}>
           <div className="modal-content" onClick={e => e.stopPropagation()}>
-            <Image
-              src={preview.url}
-              alt={preview.alt || ''}
-              width={preview.width || 800}
-              height={preview.height || 600}
-              className="modal-img"
-            />
+           {preview.url.match(/\.(mp4|mov|webm)$/i) ? (
+  <video
+    src={preview.url}
+    controls
+    autoPlay
+    className="modal-img"
+    style={{ maxWidth: '90vw', maxHeight: '85vh' }}
+  />
+) : (
+  <Image
+    src={preview.url}
+    alt={preview.alt || ''}
+    width={preview.width || 800}
+    height={preview.height || 600}
+    className="modal-img"
+  />
+)}
+
             <h2>{preview.alt}</h2>
             <p>
               Category: {CODE_TO_LABEL[preview.category]}

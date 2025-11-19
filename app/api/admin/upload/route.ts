@@ -59,35 +59,51 @@ export async function POST(req: Request) {
           ? `services/${category.toLowerCase()}/${subcategory.toLowerCase().replace(/\s+/g, '-')}`
           : `services/${category.toLowerCase()}`
 
-        const uploaded = await new Promise<any>((resolve, reject) => {
-          const stream = cloudinary.uploader.upload_stream(
-            {
-              folder,
-              transformation: [
-                {
-                  width: 2000,
-                  height: 2000,
-                  crop: 'limit',
-                  quality: 'auto:good',
-                  fetch_format: 'auto',
-                },
-              ],
-            },
-            (err, res) => (err ? reject(err) : resolve(res))
-          )
-          stream.end(buffer)
-        })
+const uploaded = await new Promise<any>((resolve, reject) => {
+  const stream = cloudinary.uploader.upload_stream(
+    {
+      folder,
+      resource_type: "auto",   // ⭐ REQUIRED for video upload
+      transformation:
+        file.type.startsWith("image/")
+          ? [
+              {
+                width: 2000,
+                height: 2000,
+                crop: "limit",
+                quality: "auto:good",
+                fetch_format: "auto",
+              },
+            ]
+          : [], // ⭐ No transformations for video
+    },
+    (err, res) => (err ? reject(err) : resolve(res))
+  )
+
+  stream.end(buffer)
+})
+
 
         const { public_id, secure_url, width, height } = uploaded
 
-        const thumbUrl = cloudinary.url(public_id, {
-          width: 250,
-          height: 250,
-          crop: 'fill',
-          gravity: 'auto',
-          fetch_format: 'auto',
-          quality: 'auto:low',
-        })
+       const thumbUrl =
+  file.type.startsWith("video/")
+    ? cloudinary.url(public_id + ".jpg", {
+        resource_type: "video",
+        width: 250,
+        height: 250,
+        crop: "fill",
+        gravity: "auto",
+      })
+    : cloudinary.url(public_id, {
+        width: 250,
+        height: 250,
+        crop: "fill",
+        gravity: "auto",
+        fetch_format: "auto",
+        quality: "auto:low",
+      })
+
 
         const doc = await ImageModel.create({
           category,
