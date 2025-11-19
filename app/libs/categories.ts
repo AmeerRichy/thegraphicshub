@@ -1,4 +1,6 @@
-// All display labels (what users see)
+// ============================================================
+// CATEGORY LABELS (same as before)
+// ============================================================
 export const CATEGORY_LABELS = [
   'AI',
   'Animation',
@@ -27,44 +29,9 @@ export const CATEGORY_LABELS = [
 export type CategoryLabel = typeof CATEGORY_LABELS[number];
 
 
-// Canonical codes (DB-safe)
-export const LABEL_TO_CODE: Record<CategoryLabel, CategoryCode> = {
-  'AI': 'AI',
-  'Animation': 'ANIMATION',
-  'Branding': 'BRANDING',
-  'Cards': 'CARDS',
-  'Character Design': 'CHARACTER_DESIGN',
-  'Editing': 'EDITING',
-  'Illustrations': 'ILLUSTRATIONS',
-  'Infographics': 'INFOGRAPHICS',
-  'Interior/Exterior Design': 'INTERIOR_EXTERIOR_DESIGN',
-  'Insta Grid': 'INSTA_GRID',
-  'Labels/Stickers': 'LABELS_STICKERS',
-  'Logo Design': 'LOGO_DESIGN',
-  'Mockups': 'MOCKUPS',
-  'Print Media': 'PRINT_MEDIA',
-  'Product/Packaging Design': 'PRODUCT_PACKAGING',
-  'Silhouettes': 'SILHOUETTES',
-  'Social Media': 'SOCIAL_MEDIA',
-  'Stationary': 'STATIONARY',
-  'Typography': 'TYPOGRAPHY',
-  'UI/UX': 'UI_UX',
-  'Vectors Design': 'VECTORS_DESIGN',
-  'Video': 'VIDEO',
-} as const;
-
-
-// Reverse mapping (code → label)
-export const CODE_TO_LABEL = Object.fromEntries(
-  Object.entries(LABEL_TO_CODE).map(([label, code]) => [code, label])
-) as Record<CategoryCode, CategoryLabel>;
-
-
-// All codes array
-export const CATEGORY_CODES = Object.values(LABEL_TO_CODE) as CategoryCode[];
-
-
-// Allowed category codes
+// ============================================================
+// CATEGORY CODES (DB safe)
+// ============================================================
 export type CategoryCode =
   | 'AI'
   | 'ANIMATION'
@@ -90,6 +57,95 @@ export type CategoryCode =
   | 'VIDEO';
 
 
-// Runtime code validator
+// ============================================================
+// LABEL → CODE mapping
+// ============================================================
+export const LABEL_TO_CODE: Record<CategoryLabel, CategoryCode> = {
+  'AI': 'AI',
+  'Animation': 'ANIMATION',
+  'Branding': 'BRANDING',
+  'Cards': 'CARDS',
+  'Character Design': 'CHARACTER_DESIGN',
+  'Editing': 'EDITING',
+  'Illustrations': 'ILLUSTRATIONS',
+  'Infographics': 'INFOGRAPHICS',
+  'Interior/Exterior Design': 'INTERIOR_EXTERIOR_DESIGN',
+  'Insta Grid': 'INSTA_GRID',
+  'Labels/Stickers': 'LABELS_STICKERS',
+  'Logo Design': 'LOGO_DESIGN',
+  'Mockups': 'MOCKUPS',
+  'Print Media': 'PRINT_MEDIA',
+  'Product/Packaging Design': 'PRODUCT_PACKAGING',
+  'Silhouettes': 'SILHOUETTES',
+  'Social Media': 'SOCIAL_MEDIA',
+  'Stationary': 'STATIONARY',
+  'Typography': 'TYPOGRAPHY',
+  'UI/UX': 'UI_UX',
+  'Vectors Design': 'VECTORS_DESIGN',
+  'Video': 'VIDEO',
+};
+
+
+// ============================================================
+// CODE → LABEL
+// ============================================================
+export const CODE_TO_LABEL = Object.fromEntries(
+  Object.entries(LABEL_TO_CODE).map(([label, code]) => [code, label])
+) as Record<CategoryCode, CategoryLabel>;
+
+
+// ============================================================
+// CATEGORY CODES ARRAY
+// ============================================================
+export const CATEGORY_CODES = Object.values(LABEL_TO_CODE) as CategoryCode[];
+
+
+// ============================================================
+// SUBCATEGORIES (DEFAULT)
+// ============================================================
+export const SUBCATEGORIES: Record<CategoryCode, string[]> = {
+  AI: ['AI Art', 'AI Enhancements', 'AI Retouch'],
+  ANIMATION: ['2D Animation', '3D Animation', 'Motion Graphics'],
+  BRANDING: ['Brand Identity', 'Brand Guidelines', 'Strategy'],
+  CARDS: ['Business', 'Invitation', 'Greeting'],
+  CHARACTER_DESIGN: ['Mascots', 'Cartoon', '3D Characters'],
+  EDITING: ['Photo Editing', 'Video Editing', 'Retouching'],
+  ILLUSTRATIONS: ['Digital Art', 'Vector Art', 'Comic Style'],
+  INFOGRAPHICS: ['Static Infographics', 'Animated Infographics'],
+  INTERIOR_EXTERIOR_DESIGN: ['Interior 3D', 'Exterior 3D', 'Floor Plans'],
+  INSTA_GRID: ['3x3 Grid', 'Puzzle Layouts'],
+  LABELS_STICKERS: ['Sticker Sheets', 'Bottle Labels', 'Packaging Labels'],
+  LOGO_DESIGN: ['Minimal', 'Mascot', '3D Logo'],
+  MOCKUPS: ['Product Mockups', 'Branding Mockups', 'UI Mockups'],
+  PRINT_MEDIA: ['Flyer', 'Brochure', 'Poster'],
+  PRODUCT_PACKAGING: ['Box Design', 'Pouch Design', 'Bottle Packaging'],
+  SILHOUETTES: ['People Silhouettes', 'Animal Silhouettes'],
+  SOCIAL_MEDIA: ['Posts', 'Stories', 'Carousel'],
+  STATIONARY: ['Letterhead', 'Envelope', 'Business Card'],
+  TYPOGRAPHY: ['Custom Lettering', 'Font Design'],
+  UI_UX: ['Web UI', 'Mobile UI', 'Wireframes'],
+  VECTORS_DESIGN: ['Vector Icons', 'Flat Vectors'],
+  VIDEO: ['Short Form', 'Ads', 'Corporate'],
+};
+
+
+// ============================================================
+// REVERSE SUBCATEGORY → CATEGORY
+// ============================================================
+export const SUBCATEGORY_TO_CATEGORY: Record<string, CategoryCode> = {};
+Object.entries(SUBCATEGORIES).forEach(([cat, subs]) => {
+  for (const s of subs) SUBCATEGORY_TO_CATEGORY[s] = cat as CategoryCode;
+});
+
+
+// ============================================================
+// HELPERS
+// ============================================================
 export const isValidCategoryCode = (c: string): c is CategoryCode =>
   CATEGORY_CODES.includes(c as CategoryCode);
+
+export const getSubcategories = (c: CategoryCode): string[] =>
+  SUBCATEGORIES[c] || [];
+
+export const isValidSubcategory = (c: CategoryCode, s: string) =>
+  SUBCATEGORIES[c]?.includes(s) ?? false;

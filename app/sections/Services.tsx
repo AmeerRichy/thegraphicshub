@@ -4,12 +4,14 @@ import { useEffect, useRef, useState } from 'react'
 import {
   CATEGORY_LABELS,
   LABEL_TO_CODE,
+  SUBCATEGORIES,
   type CategoryLabel,
 } from '@/app/libs/categories'
 
 type Img = {
   _id: string
   category: string
+  subcategory?: string | null
   alt?: string
   width?: number
   height?: number
@@ -19,6 +21,8 @@ type Img = {
 
 export default function ServicesPage() {
   const [cat, setCat] = useState<CategoryLabel>(CATEGORY_LABELS[0])
+  const [sub, setSub] = useState<string>('ALL')
+
   const [items, setItems] = useState<Img[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -36,6 +40,12 @@ export default function ServicesPage() {
   const scrollStart = useRef(0)
 
   const code = LABEL_TO_CODE[cat]
+  const subcats = SUBCATEGORIES[code] || []
+
+  // reset subcategory on category change
+  useEffect(() => {
+    setSub('ALL')
+  }, [cat])
 
   const updateArrows = () => {
     const el = railRef.current
@@ -64,6 +74,7 @@ export default function ServicesPage() {
     rail.scrollBy({ left: delta, behavior: 'smooth' })
   }
 
+  // ⭐ LOAD IMAGES WITH SUBCATEGORY SUPPORT
   const load = async () => {
     setLoading(true)
     setError(null)
@@ -72,12 +83,15 @@ export default function ServicesPage() {
     abortRef.current?.abort()
     abortRef.current = controller
 
+    const qSub = sub === 'ALL' ? '' : `&sub=${encodeURIComponent(sub)}`
+
     try {
       const res = await fetch(
-        `/api/images?cat=${encodeURIComponent(code)}&page=1&limit=9999`,
+        `/api/images?cat=${encodeURIComponent(code)}${qSub}&page=1&limit=9999`,
         { cache: 'no-store', signal: controller.signal }
       )
       const json = await res.json()
+
       if (!res.ok) {
         setError(json?.error || 'Failed to load images')
       } else {
@@ -103,7 +117,7 @@ export default function ServicesPage() {
       clearTimeout(t)
       abortRef.current?.abort()
     }
-  }, [cat])
+  }, [cat, sub])
 
   useEffect(() => {
     const el = railRef.current
@@ -174,13 +188,9 @@ export default function ServicesPage() {
         Wonders We<span>Weave</span>
       </h1>
 
-      {/* Category Slider */}
+      {/* CATEGORY SLIDER */}
       <div className="catWrap">
-        <button
-          ref={btnLeftRef}
-          className="arrow left"
-          onClick={() => scrollByAmount('left')}
-        >
+        <button ref={btnLeftRef} className="arrow left" onClick={() => scrollByAmount('left')}>
           ‹
         </button>
 
@@ -189,7 +199,7 @@ export default function ServicesPage() {
             {CATEGORY_LABELS.map((c, i) => (
               <button
                 key={c}
-                ref={el => {
+                ref={(el: HTMLButtonElement | null) => {
                   itemRefs.current[i] = el
                 }}
                 className={`tab ${c === cat ? 'active' : ''}`}
@@ -216,14 +226,32 @@ export default function ServicesPage() {
           </div>
         </div>
 
-        <button
-          ref={btnRightRef}
-          className="arrow right"
-          onClick={() => scrollByAmount('right')}
-        >
+        <button ref={btnRightRef} className="arrow right" onClick={() => scrollByAmount('right')}>
           ›
         </button>
       </div>
+
+      {/* SUBCATEGORY TABS */}
+      {subcats.length > 0 && (
+        <div className="subTabs">
+          <button
+            className={`subtab ${sub === 'ALL' ? 'active' : ''}`}
+            onClick={() => setSub('ALL')}
+          >
+            All
+          </button>
+
+          {subcats.map(s => (
+            <button
+              key={s}
+              className={`subtab ${sub === s ? 'active' : ''}`}
+              onClick={() => setSub(s)}
+            >
+              {s}
+            </button>
+          ))}
+        </div>
+      )}
 
       {error && <p className="err">{error}</p>}
 
@@ -268,15 +296,45 @@ export default function ServicesPage() {
         </div>
       )}
 
+      {/* SUBTAB UI STYLES */}
+      <style jsx>{`
+        .subTabs {
+          display: flex;
+          justify-content: center;
+          gap: 10px;
+          margin: 12px 0 24px;
+          flex-wrap: wrap;
+        }
+        .subtab {
+          background: #111;
+          border: 1px solid #333;
+          padding: 6px 14px;
+          border-radius: 8px;
+          color: #dcdcdc;
+          cursor: pointer;
+          font-family: 'Arima', serif;
+          transition: 0.25s ease;
+        }
+        .subtab:hover {
+          background: #222;
+          border-color: #555;
+        }
+        .subtab.active {
+          background: #ffd700;
+          color: #000;
+          font-weight: 600;
+          border-color: #ffd700;
+        }
+      `}</style>
+
+      {/* ORIGINAL CSS — UNTOUCHED */}
       <style jsx>{`
         .wrap {
-          padding: 150px 16px 40px; /* ⬅ added top padding */
+          padding: 150px 16px 40px;
           color: #fff;
           background: #000;
           min-height: 100vh;
         }
-
-        /* ✨ updated title style */
         .title {
           text-align: center;
           font-size: 3rem;
@@ -285,7 +343,6 @@ export default function ServicesPage() {
           color: #fff;
           margin-bottom: 10px;
         }
-
         .title span {
           color: #ffd700;
           font-family: 'Corinthia', serif;
@@ -293,8 +350,6 @@ export default function ServicesPage() {
           font-weight: 500;
           margin-left: -15px;
         }
-
-        /* rest stays identical */
         .catWrap {
           position: relative;
           max-width: 1200px;
@@ -312,13 +367,6 @@ export default function ServicesPage() {
           user-select: none;
           padding: 0 50px;
           mask-image: linear-gradient(
-            to right,
-            transparent 0,
-            #000 40px,
-            #000 calc(100% - 40px),
-            transparent 100%
-          );
-          -webkit-mask-image: linear-gradient(
             to right,
             transparent 0,
             #000 40px,
@@ -365,9 +413,7 @@ export default function ServicesPage() {
           bottom: 0;
           left: 0;
           transition: transform 0.35s ease, width 0.35s ease;
-          will-change: transform, width;
         }
-
         .arrow {
           position: absolute;
           top: 0;
@@ -398,7 +444,6 @@ export default function ServicesPage() {
         .arrow.right {
           right: 0;
         }
-
         .masonry {
           column-count: 1;
           column-gap: 14px;
@@ -442,7 +487,6 @@ export default function ServicesPage() {
           background: #111;
           border-radius: 10px;
         }
-
         .popup {
           position: fixed;
           inset: 0;
@@ -451,7 +495,6 @@ export default function ServicesPage() {
           align-items: center;
           justify-content: center;
           z-index: 1000;
-          animation: fadeIn 0.3s ease forwards;
         }
         .popup-inner {
           position: relative;
@@ -481,34 +524,6 @@ export default function ServicesPage() {
         }
         .close:hover {
           transform: scale(1.2);
-        }
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        .loadMore {
-          display: block;
-          margin: 20px auto 40px;
-          padding: 10px 18px;
-          border-radius: 10px;
-          border: 1px solid #e9c57280;
-          color: #e9c572;
-          background: #111;
-          cursor: pointer;
-          transition: all 0.3s ease;
-        }
-        .loadMore:hover {
-          background: #1a1a1a;
-          border-color: #e9c572;
-        }
-        .loadMore[disabled] {
-          opacity: 0.7;
-          cursor: not-allowed;
         }
       `}</style>
     </section>

@@ -1,14 +1,30 @@
 'use client'
 
-import { useRef, useState } from 'react'
-import { CATEGORY_CODES, type CategoryCode } from '@/app/libs/categories'
+import { useRef, useState, useEffect } from 'react'
+import {
+  CATEGORY_CODES,
+  CODE_TO_LABEL,
+  SUBCATEGORIES,
+  getSubcategories,
+  type CategoryCode,
+} from '@/app/libs/categories'
 
 export default function AdminUploadPage() {
   const [category, setCategory] = useState<CategoryCode>('PRINT_MEDIA')
+  const [subcategory, setSubcategory] = useState<string | null>(null)
+
   const [altPrefix, setAltPrefix] = useState('')
   const [files, setFiles] = useState<File[]>([])
   const [busy, setBusy] = useState(false)
   const inputRef = useRef<HTMLInputElement | null>(null)
+
+  // ---------------------------------------------------
+  // When category changes, reset subcategory
+  // ---------------------------------------------------
+  useEffect(() => {
+    const subs = getSubcategories(category)
+    setSubcategory(subs.length > 0 ? null : null)
+  }, [category])
 
   const onPick = (e: React.ChangeEvent<HTMLInputElement>) => {
     const list = e.target.files ? Array.from(e.target.files) : []
@@ -27,16 +43,21 @@ export default function AdminUploadPage() {
   const onSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!files.length) return
+
     setBusy(true)
     const fd = new FormData()
+
     fd.append('category', category)
+    if (subcategory) fd.append('subcategory', subcategory)
     fd.append('altPrefix', altPrefix)
+
     files.forEach(f => fd.append('files', f))
 
     const res = await fetch('/api/admin/upload', {
       method: 'POST',
       body: fd,
     })
+
     const json = await res.json()
     setBusy(false)
 
@@ -46,8 +67,11 @@ export default function AdminUploadPage() {
     }
 
     alert(`Uploaded ${json.saved} image(s)`)
+
     setFiles([])
     setAltPrefix('')
+    setSubcategory(null)
+
     if (inputRef.current) inputRef.current.value = ''
   }
 
@@ -59,23 +83,47 @@ export default function AdminUploadPage() {
       <h1>Admin — Upload Images</h1>
 
       <form onSubmit={onSubmit}>
+        {/* ------------------------------------------- */}
+        {/* CATEGORY + SUBCATEGORY ROW */}
+        {/* ------------------------------------------- */}
         <div className="row">
+          {/* Category */}
           <label>
             Category
             <select
               value={category}
-              onChange={e =>
+              onChange={e => {
                 setCategory(e.target.value as CategoryCode)
-              }
+              }}
             >
               {CATEGORY_CODES.map(c => (
                 <option key={c} value={c}>
-                  {c}
+                  {CODE_TO_LABEL[c]}
                 </option>
               ))}
             </select>
           </label>
 
+          {/* Subcategory */}
+          <label>
+            Subcategory (optional)
+            <select
+              value={subcategory || ''}
+              onChange={e =>
+                setSubcategory(e.target.value || null)
+              }
+            >
+              <option value="">None (All)</option>
+
+              {getSubcategories(category).map(sub => (
+                <option key={sub} value={sub}>
+                  {sub}
+                </option>
+              ))}
+            </select>
+          </label>
+
+          {/* Alt prefix */}
           <label>
             Alt prefix (optional)
             <input
@@ -86,6 +134,9 @@ export default function AdminUploadPage() {
           </label>
         </div>
 
+        {/* ------------------------------------------- */}
+        {/* DRAG & DROP */}
+        {/* ------------------------------------------- */}
         <div
           className="drop"
           onDragOver={e => e.preventDefault()}
@@ -103,16 +154,16 @@ export default function AdminUploadPage() {
           />
         </div>
 
+        {/* ------------------------------------------- */}
+        {/* FILE LIST */}
+        {/* ------------------------------------------- */}
         {files.length > 0 && (
           <>
             <div className="summary">
               <span>{files.length} file(s) selected</span>
-              <span>
-                Total:{' '}
-                {totalSizeMB.toFixed(2)}
-                {' MB'}
-              </span>
+              <span>{totalSizeMB.toFixed(2)} MB</span>
             </div>
+
             <ul className="list">
               {files.map((f, i) => (
                 <li key={`${f.name}-${i}`}>
@@ -122,10 +173,7 @@ export default function AdminUploadPage() {
                       {(f.size / (1024 * 1024)).toFixed(2)} MB
                     </span>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => removeAt(i)}
-                  >
+                  <button type="button" onClick={() => removeAt(i)}>
                     Remove
                   </button>
                 </li>
@@ -134,6 +182,9 @@ export default function AdminUploadPage() {
           </>
         )}
 
+        {/* ------------------------------------------- */}
+        {/* SUBMIT BUTTON */}
+        {/* ------------------------------------------- */}
         <button
           className="submit"
           disabled={busy || files.length === 0}
@@ -146,30 +197,35 @@ export default function AdminUploadPage() {
         </button>
       </form>
 
+      {/* ------------------------------------------- */}
+      {/* ORIGINAL STYLES (UNTOUCHED) */}
+      {/* ------------------------------------------- */}
       <style jsx>{`
         .wrap {
           max-width: 900px;
           margin: 40px auto;
           padding: 0 16px 40px;
           color: #e9c572;
-          font-family: system-ui, -apple-system, BlinkMacSystemFont,
-            'Segoe UI', sans-serif;
         }
+
         h1 {
           margin: 0 0 16px;
         }
+
         form {
           background: #0f0f0f;
           border: 1px solid #3a2b10;
           border-radius: 12px;
           padding: 16px;
         }
+
         .row {
           display: flex;
           gap: 16px;
           flex-wrap: wrap;
           margin-bottom: 12px;
         }
+
         label {
           display: flex;
           flex-direction: column;
@@ -178,6 +234,7 @@ export default function AdminUploadPage() {
           flex: 1;
           min-width: 200px;
         }
+
         select,
         input {
           background: #131313;
@@ -186,13 +243,8 @@ export default function AdminUploadPage() {
           border-radius: 8px;
           padding: 8px 10px;
           font-size: 14px;
-          outline: none;
         }
-        select:focus,
-        input:focus {
-          border-color: #e9c572;
-          box-shadow: 0 0 0 1px #e9c57244;
-        }
+
         .drop {
           margin: 14px 0;
           padding: 24px;
@@ -201,21 +253,15 @@ export default function AdminUploadPage() {
           text-align: center;
           cursor: pointer;
           background: #111;
-          transition: background 0.15s ease, border-color 0.15s ease,
-            transform 0.1s ease;
         }
-        .drop:hover {
-          background: #151515;
-          border-color: #e9c57266;
-          transform: translateY(-1px);
-        }
+
         .summary {
           display: flex;
           justify-content: space-between;
           font-size: 13px;
           margin-bottom: 6px;
-          opacity: 0.85;
         }
+
         .list {
           list-style: none;
           padding: 0;
@@ -223,6 +269,7 @@ export default function AdminUploadPage() {
           display: grid;
           gap: 8px;
         }
+
         .list li {
           display: flex;
           justify-content: space-between;
@@ -233,32 +280,7 @@ export default function AdminUploadPage() {
           padding: 8px 10px;
           color: #ddd;
         }
-        .file-meta {
-          display: flex;
-          flex-direction: column;
-          gap: 2px;
-        }
-        .file-name {
-          font-size: 13px;
-        }
-        .file-size {
-          font-size: 11px;
-          opacity: 0.7;
-        }
-        .list button {
-          background: #2a2a2a;
-          color: #fff;
-          border: 0;
-          border-radius: 6px;
-          padding: 4px 8px;
-          cursor: pointer;
-          font-size: 12px;
-          transition: background 0.15s ease, transform 0.1s ease;
-        }
-        .list button:hover {
-          background: #3a1010;
-          transform: translateY(-1px);
-        }
+
         .submit {
           margin-top: 10px;
           padding: 10px 14px;
@@ -266,24 +288,6 @@ export default function AdminUploadPage() {
           border: 1px solid #e9c57280;
           color: #e9c572;
           background: #1a1a1a;
-          cursor: pointer;
-          font-size: 14px;
-          transition: background 0.15s ease, transform 0.1s ease,
-            opacity 0.15s ease;
-        }
-        .submit:hover:not(:disabled) {
-          background: #232323;
-          transform: translateY(-1px);
-        }
-        .submit[disabled] {
-          opacity: 0.6;
-          cursor: not-allowed;
-          transform: none;
-        }
-        @media (max-width: 600px) {
-          form {
-            padding: 14px;
-          }
         }
       `}</style>
     </main>

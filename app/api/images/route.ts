@@ -7,26 +7,42 @@ export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
-// GET /api/images?cat=PRINT_MEDIA&page=1&limit=24
+// GET /api/images?cat=PRINT_MEDIA&sub=Magazine&page=1&limit=24
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
+
     const rawCat = searchParams.get('cat') || ''
+    const rawSub = searchParams.get('sub') || ''
     const page = parseInt(searchParams.get('page') || '1', 10)
     const limit = parseInt(searchParams.get('limit') || '24', 10)
     const skip = (page - 1) * limit
 
     await dbConnect()
     const query: any = {}
+
+    // CATEGORY
     if (rawCat) {
       if (!isValidCategoryCode(rawCat)) {
-        return NextResponse.json({ ok: false, error: 'Invalid category' }, { status: 400 })
+        return NextResponse.json(
+          { ok: false, error: 'Invalid category' },
+          { status: 400 }
+        )
       }
       query.category = rawCat
     }
 
+    // SUBCATEGORY
+    if (rawSub) {
+      query.subcategory = rawSub
+    }
+
     const [items, total] = await Promise.all([
-      ImageModel.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      ImageModel.find(query)
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .lean(),
       ImageModel.countDocuments(query),
     ])
 
