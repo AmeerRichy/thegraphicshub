@@ -132,9 +132,9 @@ export default function WondersSection() {
         .title span {
               color: #ffd700;
           font-family: 'Corinthia' , serif;
-       font-size: clamp(3rem, 4vw, 5rem);
+     font-size: clamp(5rem, 4vw, 5rem);
           font-weight: 500;
-          margin-left: -15px;
+          margin-left: -30px;
         }
 
         .subtitle {

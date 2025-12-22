@@ -27,11 +27,11 @@ export default function Footer() {
 
   // --- SOCIALS (external)
   const socialLinks = [
-    { label: 'Be', url: 'https://www.behance.net/your-handle', title: 'Behance' },
-    { label: 'f', url: 'https://www.facebook.com/your-page', title: 'Facebook' },
-    { label: 'in', url: 'https://www.linkedin.com/company/your-company', title: 'LinkedIn' },
-    { label: '@', url: 'https://www.instagram.com/your-handle', title: 'Instagram' },
-    { label: 'X', url: 'https://x.com/your-handle', title: 'X (Twitter)' },
+    { label: 'Be', url: 'https://www.behance.net/graphics_hub', title: 'Behance' },
+    { label: 'f', url: 'https://www.facebook.com/graphicshub3878/', title: 'Facebook' },
+    { label: 'in', url: 'https://www.linkedin.com/company/graphicshub3878/', title: 'LinkedIn' },
+    { label: '@', url: 'https://www.instagram.com/graphics___hub', title: 'Instagram' },
+    // { label: 'X', url: 'https://x.com/your-handle', title: 'X (Twitter)' },
   ]
 
   // is this link active?

@@ -322,7 +322,7 @@ export default function PraiseSection() {
         }
 
         .praise-title {
-          font-size: 3rem;
+           font-size: clamp(2rem, 4vw, 3rem);
           font-weight: 700;
           font-family: 'Arima', serif;
           letter-spacing: 0.5px;
@@ -332,7 +332,7 @@ export default function PraiseSection() {
           font-family: 'Corinthia' , serif;
        font-size: clamp(3rem, 4vw, 5rem);
           font-weight: 500;
-          margin-left: 1px;
+          margin-left: -10px;
         }
         .praise-subtitle {
           color: rgba(255, 255, 255, 0.82);

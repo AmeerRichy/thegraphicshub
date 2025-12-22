@@ -67,7 +67,7 @@ export default function Abouthero() {
         .heading {
           font-family: 'Arima', serif;
           font-weight: 700;
-          font-size: clamp(2.6rem, 6vw, 4rem);
+          font-size: clamp(2rem, 4vw, 3rem);
           line-height: 1.05;
           text-align: center;
           margin: 0 0 60px;
@@ -78,9 +78,9 @@ export default function Abouthero() {
         .script {
           color: #ffd700;
           font-family: 'Corinthia', serif;
-          font-size: clamp(3rem, 4vw, 5rem);
+          font-size: clamp(5rem, 4vw, 5rem);
           font-weight: 500;
-          margin-left: -15px;
+          margin-left: -30px;
         }
 
         .grid {

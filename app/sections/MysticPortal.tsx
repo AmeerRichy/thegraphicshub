@@ -295,8 +295,8 @@ export default function MysticPortalExact() {
 
         .glass { position: relative; border-radius: 10px; padding: 32px 36px 28px; background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.12); backdrop-filter: blur(7px); -webkit-backdrop-filter: blur(7px); }
 
-        .title { margin: 0 0 16px 0; font-family: 'Playfair Display', serif; font-weight: 700; font-size: clamp(32px, 5vw, 54px); }
-        .script { font-family: 'Corinthia', cursive; color: #ffcc00; text-shadow: 0 0 24px rgba(255,204,0,.28); }
+        .title { margin: 0 0 16px 0; font-family: 'Playfair Display', serif; font-weight: 700;  font-size: clamp(2rem, 4vw, 3rem); }
+        .script { font-family: 'Corinthia', cursive; color: #ffcc00; text-shadow: 0 0 24px rgba(255,204,0,.28);  font-size: clamp(5rem, 4vw, 5rem); font-weight: 500; margin-left: -25px; }
         .desc { margin: 0 0 20px 0; max-width: 560px; line-height: 1.7; color: #eaeaea; font-family: 'Arima', sans-serif; }
 
         /* === Text entrance animation === */

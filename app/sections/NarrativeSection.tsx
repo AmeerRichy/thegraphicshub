@@ -72,7 +72,7 @@ const NarrativeSection = () => {
         }
 
         .narrative__title {
-          font-size: clamp(2rem, 4vw, 3.5rem);
+          font-size: clamp(2rem, 4vw, 3rem);
           font-weight: 700;
           margin-bottom: 30px;
           font-family: 'Arima', serif;
@@ -82,9 +82,9 @@ const NarrativeSection = () => {
         .highlight {
           color: #ffd700;
           font-family: 'Corinthia' , serif;
-       font-size: clamp(3rem, 4vw, 5rem);
+       font-size: clamp(5rem, 4vw, 5rem);
           font-weight: 500;
-          margin-left: -15px;
+          margin-left: -30px;
         }
 
         .narrative__desc {

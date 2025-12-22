@@ -364,7 +364,7 @@ export default function ServicesPage() {
         }
         .title {
           text-align: center;
-          font-size: 3rem;
+          font-size: clamp(2rem, 4vw, 3rem);
           font-weight: 700;
           font-family: 'Arima', serif;
           color: #fff;
@@ -373,9 +373,9 @@ export default function ServicesPage() {
         .title span {
           color: #ffd700;
           font-family: 'Corinthia', serif;
-          font-size: clamp(3rem, 4vw, 5rem);
+          font-size: clamp(5rem, 4vw, 5rem);
           font-weight: 500;
-          margin-left: -15px;
+          margin-left: -20px;
         }
         .catWrap {
           position: relative;
